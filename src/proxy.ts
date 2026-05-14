@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicPaths = ["/login", "/register"];
+const publicPaths = ["/login", "/register", "/api"];
 const rolePrefixes: Record<string, string> = {
   patient: "/patient",
   pharmacist: "/pharmacist",
@@ -55,5 +55,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api).*)"],
 };

@@ -27,7 +27,7 @@ const item = {
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <GlassCard intensity="light" glow="green" hover={true} className={className}>
+    <GlassCard intensity="light" glow="green" hover={true} className={`bg-[#0A1628]/80 ${className}`}>
       {children}
     </GlassCard>
   );
@@ -61,14 +61,14 @@ function RevenueCount({ target }: { target: number }) {
 function StatCard({ label, value, icon, color }: { label: string; value: number; icon: React.ReactNode; color: string }) {
   const count = useCountUp(value);
   return (
-    <motion.div variants={item} className={`bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-soft p-4 transition-all duration-200 hover:border-[#00D4AA] hover:shadow-[0_0_20px_rgba(0,212,170,0.15)]`}>
+    <motion.div variants={item} className={`bg-[#0A1628]/80 border border-[#00D4AA]/10 rounded-card p-4 transition-all duration-200 hover:border-[#00D4AA]/30 hover:shadow-[0_0_20px_rgba(0,212,170,0.1)]`}>
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-lg bg-[#00D4AA]/10 flex items-center justify-center text-[#00D4AA]">
           {icon}
         </div>
         <div>
           <p className={`text-5xl font-bold ${color}`}>{count}</p>
-          <p className="text-xs text-gray-500">{label}</p>
+          <p className="text-xs text-gray-400">{label}</p>
         </div>
       </div>
     </motion.div>
@@ -236,12 +236,12 @@ export default function AdminDashboard() {
         className="max-w-5xl mx-auto space-y-6"
       >
         <motion.div variants={item} className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-[#022C22]">
+          <h1 className="text-2xl font-semibold text-white">
             {t(locale, "admin.title")}
           </h1>
           <div className="flex items-center gap-2">
             {isDev && (
-              <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm">
+              <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm" className="text-white">
                 {t(locale, "admin.seed")}
               </NeoButton>
             )}
@@ -271,16 +271,16 @@ export default function AdminDashboard() {
         </motion.div>
 
         <motion.div variants={item} className="grid grid-cols-3 gap-3">
-          <NeoButton onClick={() => setShowRegister(true)} variant="primary" size="md" className="flex items-center gap-2">
+          <NeoButton onClick={() => setShowRegister(true)} variant="primary" size="md" className="flex items-center gap-2 text-white">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
             {t(locale, "admin.register_driver")}
           </NeoButton>
-          <NeoButton onClick={() => setShowSubForm(true)} variant="neumorphic" size="md" className="flex items-center gap-2">
+          <NeoButton onClick={() => setShowSubForm(true)} variant="neumorphic" size="md" className="flex items-center gap-2 text-white bg-[#0A1628]/80 border-[#00D4AA]/20 hover:border-[#00D4AA]/40">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
             {t(locale, "admin.billing.new")}
           </NeoButton>
           <Link href="/admin/payouts"
-            className="flex items-center gap-2 px-4 py-3 rounded-btn text-sm font-medium text-[#022C22] bg-[#F0FDF9] border border-[#A7F3D0] hover:border-[#00D4AA] transition-all duration-200">
+            className="flex items-center gap-2 px-4 py-3 rounded-btn text-sm font-medium text-white bg-[#0A1628]/80 border border-[#00D4AA]/20 hover:border-[#00D4AA]/40 transition-all duration-200">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             {t(locale, "admin.payouts.title")}
           </Link>
@@ -288,47 +288,47 @@ export default function AdminDashboard() {
 
         <motion.div variants={item}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold text-[#022C22]">{t(locale, "admin.billing.title")}</h2>
+            <h2 className="text-lg font-semibold text-white">{t(locale, "admin.billing.title")}</h2>
             <NeoButton onClick={() => setShowSubForm(true)} variant="primary" size="md">
               {t(locale, "admin.billing.new")}
             </NeoButton>
           </div>
           <div className="grid grid-cols-4 gap-4 mb-4">
-            <Card>
-              <p className="text-xs text-[#6B7280] mb-1">{t(locale, "admin.billing.mrr")}</p>
+            <Card className="bg-[#0A1628]/80">
+              <p className="text-xs text-gray-400 mb-1">{t(locale, "admin.billing.mrr")}</p>
               <p className="text-5xl font-bold text-[#00D4AA]">{revenue?.mrr_tnd ?? 0} TND</p>
             </Card>
-            <Card>
-              <p className="text-xs text-[#6B7280] mb-1">{t(locale, "admin.billing.commissions")}</p>
+            <Card className="bg-[#0A1628]/80">
+              <p className="text-xs text-gray-400 mb-1">{t(locale, "admin.billing.commissions")}</p>
               <p className="text-5xl font-bold text-[#E69E3E]">{revenue?.commissions_tnd ?? 0} TND</p>
             </Card>
-            <Card>
-              <p className="text-xs text-[#6B7280] mb-1">{t(locale, "admin.billing.pharmacy_earnings")}</p>
+            <Card className="bg-[#0A1628]/80">
+              <p className="text-xs text-gray-400 mb-1">{t(locale, "admin.billing.pharmacy_earnings")}</p>
               <p className="text-5xl font-bold text-[#00C853]">{revenue?.total_pharmacy_earnings ?? 0} TND</p>
             </Card>
-            <Card>
-              <p className="text-xs text-[#6B7280] mb-1">{t(locale, "admin.billing.driver_payouts")}</p>
+            <Card className="bg-[#0A1628]/80">
+              <p className="text-xs text-gray-400 mb-1">{t(locale, "admin.billing.driver_payouts")}</p>
               <p className="text-5xl font-bold text-[#FF4D6D]">{revenue?.total_driver_payouts ?? 0} TND</p>
             </Card>
           </div>
           <div className="grid grid-cols-3 gap-4 mb-4">
-            <Card>
-              <p className="text-xs text-[#6B7280] mb-1">{t(locale, "admin.billing.active_subs")}</p>
+            <Card className="bg-[#0A1628]/80">
+              <p className="text-xs text-gray-400 mb-1">{t(locale, "admin.billing.active_subs")}</p>
               <p className="text-5xl font-bold text-[#00C853]">{revenue?.active_subscriptions ?? 0}</p>
             </Card>
-            <Card>
-              <p className="text-xs text-[#6B7280] mb-1">{t(locale, "admin.billing.deliveries_month")}</p>
-              <p className="text-5xl font-bold text-[#022C22]">{revenue?.deliveries_this_month ?? 0}</p>
+            <Card className="bg-[#0A1628]/80">
+              <p className="text-xs text-gray-400 mb-1">{t(locale, "admin.billing.deliveries_month")}</p>
+              <p className="text-5xl font-bold text-white">{revenue?.deliveries_this_month ?? 0}</p>
             </Card>
-            <Card>
-              <p className="text-xs text-[#6B7280] mb-1">{t(locale, "admin.billing.net_profit")}</p>
-              <p className="text-5xl font-bold text-[#022C22]">{revenue?.net_profit ?? 0} TND</p>
+            <Card className="bg-[#0A1628]/80">
+              <p className="text-xs text-gray-400 mb-1">{t(locale, "admin.billing.net_profit")}</p>
+              <p className="text-5xl font-bold text-white">{revenue?.net_profit ?? 0} TND</p>
             </Card>
           </div>
 
           {revenue?.revenue_history && revenue.revenue_history.length > 0 && (
-            <Card className="mb-4">
-              <p className="text-sm font-semibold text-[#022C22] mb-3">{t(locale, "admin.billing.revenue_chart")}</p>
+            <Card className="bg-[#0A1628]/80 mb-4">
+              <p className="text-sm font-semibold text-white mb-3">{t(locale, "admin.billing.revenue_chart")}</p>
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={revenue.revenue_history}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
@@ -345,14 +345,14 @@ export default function AdminDashboard() {
           )}
           {subs && subs.length > 0 && (
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-500 mb-2">
+              <p className="text-sm font-medium text-gray-400 mb-2">
                 {t(locale, "admin.billing.top_plan")}<span className="text-[#00D4AA] font-semibold">{revenue?.top_plan || "N/A"}</span>
               </p>
               {subs.map((s) => (
-                <Card key={s.id} className="flex items-center justify-between">
+                <Card key={s.id} className="bg-[#0A1628]/80 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-[#022C22]">{s.pharmacy_name}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-medium text-white">{s.pharmacy_name}</p>
+                    <p className="text-xs text-gray-400">
                       {s.plan} &middot; {s.price_tnd} TND/mo &middot;
                       {s.is_active ? (
                         <span className="text-[#00C853]"> {t(locale, "admin.status.active")}</span>
@@ -378,14 +378,14 @@ export default function AdminDashboard() {
           </div>
         ) : (
           <motion.div variants={item}>
-            <h2 className="text-lg font-semibold text-[#022C22] mb-3">
+            <h2 className="text-lg font-semibold text-white mb-3">
               {t(locale, "admin.drivers.title")}
             </h2>
             <div className="space-y-2">
               {(drivers || []).map((d) => (
-                <Card key={d.driver_token_hash} className="flex items-center justify-between">
+                <Card key={d.driver_token_hash} className="bg-[#0A1628]/80 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-[#022C22] font-mono">
+                    <p className="text-sm font-medium text-white font-mono">
                       {d.driver_token_hash.slice(0, 16)}...
                     </p>
                     <p className={`text-xs mt-0.5 ${getLicenseColor(d.license_expires_at)}`}>
@@ -410,7 +410,7 @@ export default function AdminDashboard() {
                 </Card>
               ))}
               {(drivers || []).length === 0 && (
-                <p className="text-sm text-gray-500 text-center py-4">
+                <p className="text-sm text-gray-400 text-center py-4">
                   {t(locale, "admin.drivers.empty")}
                 </p>
               )}
@@ -425,13 +425,13 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               onSubmit={handleRegisterDriver}
-              className="relative bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-soft p-6 max-w-md w-full space-y-4"
+              className="relative bg-[#0A1628]/95 backdrop-blur-xl border border-[#00D4AA]/20 rounded-card shadow-soft p-6 max-w-md w-full space-y-4"
             >
-              <h3 className="text-lg font-semibold text-[#022C22]">
+              <h3 className="text-lg font-semibold text-white">
                 {t(locale, "admin.register.title")}
               </h3>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">
+                <label className="block text-sm font-medium text-gray-400 mb-1">
                   {t(locale, "admin.register.id_label")}
                 </label>
                 <input
@@ -439,7 +439,7 @@ export default function AdminDashboard() {
                   value={driverId}
                   onChange={(e) => setDriverId(e.target.value)}
                   required
-                  className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-[#022C22] text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent"
+                  className="w-full px-3 py-2.5 rounded-btn border border-[#00D4AA]/20 bg-[#0D1E32] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent"
                   placeholder={t(locale, "admin.register.id_placeholder")}
                 />
               </div>
@@ -462,35 +462,35 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               onSubmit={handleCreateSubscription}
-              className="relative bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-soft p-6 max-w-md w-full space-y-4"
+              className="relative bg-[#0A1628]/95 backdrop-blur-xl border border-[#00D4AA]/20 rounded-card shadow-soft p-6 max-w-md w-full space-y-4"
             >
-              <h3 className="text-lg font-semibold text-[#022C22]">{t(locale, "admin.subscription.title")}</h3>
+              <h3 className="text-lg font-semibold text-white">{t(locale, "admin.subscription.title")}</h3>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">{t(locale, "admin.subscription.name_label")}</label>
+                <label className="block text-sm font-medium text-gray-400 mb-1">{t(locale, "admin.subscription.name_label")}</label>
                 <input
                   type="text"
                   value={subPharmacyName}
                   onChange={(e) => setSubPharmacyName(e.target.value)}
                   required
-                  className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-[#022C22] text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent"
+                  className="w-full px-3 py-2.5 rounded-btn border border-[#00D4AA]/20 bg-[#0D1E32] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">{t(locale, "admin.subscription.id_label")}</label>
+                <label className="block text-sm font-medium text-gray-400 mb-1">{t(locale, "admin.subscription.id_label")}</label>
                 <input
                   type="text"
                   value={subPharmacyId}
                   onChange={(e) => setSubPharmacyId(e.target.value)}
                   placeholder={t(locale, "admin.subscription.id_placeholder")}
-                  className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-[#022C22] text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent"
+                  className="w-full px-3 py-2.5 rounded-btn border border-[#00D4AA]/20 bg-[#0D1E32] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">{t(locale, "admin.subscription.plan_label")}</label>
+                <label className="block text-sm font-medium text-gray-400 mb-1">{t(locale, "admin.subscription.plan_label")}</label>
                 <select
                   value={subPlan}
                   onChange={(e) => setSubPlan(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-[#022C22] text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent"
+                  className="w-full px-3 py-2.5 rounded-btn border border-[#00D4AA]/20 bg-[#0D1E32] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent"
                 >
                   <option value="STARTER">{t(locale, "admin.subscription.starter")}</option>
                   <option value="PRO">{t(locale, "admin.subscription.pro")}</option>

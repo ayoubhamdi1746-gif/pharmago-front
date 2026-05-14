@@ -368,6 +368,8 @@ export const i18n: Record<Locale, Record<string, string>> = {
     "login.error.inactive": "Le compte est inactif",
     "login.error.connection": "Erreur de connexion au serveur",
     "login.footer": "PharmaGo — Gestion de livraison médicale",
+    "login.quote": "La santé, livrée avec confiance.",
+    "login.trust": "Certifié · Sécurisé · Tunisie",
     "patient.stepper.submitted": "Soumise",
     "patient.stepper.verification": "Vérification",
     "patient.stepper.ready": "Prête",

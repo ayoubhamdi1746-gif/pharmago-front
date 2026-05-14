@@ -65,7 +65,7 @@ function OtpInput({ value, onChange }: { value: string; onChange: (v: string) =>
           <div
             key={i}
             className={`w-10 h-12 rounded-btn border-2 flex items-center justify-center text-lg font-mono font-bold transition-all duration-150 ${
-              d ? "border-[#00D4AA] bg-[#F0FDF9] text-[#022C22]" : "border-[#A7F3D0] bg-white text-gray-300"
+              d ? "border-[#00D4AA] bg-[#0D1E32] text-white" : "border-[#00D4AA]/30 bg-[#0A1628] text-gray-500"
             } ${value.length === i ? "ring-2 ring-[#00D4AA] border-[#00D4AA]" : ""}`}
           >
             {d || ""}
@@ -131,9 +131,9 @@ export default function DriverDashboard() {
     <RoleGuard allowedRole="driver">
       <motion.div variants={container} initial="hidden" animate="show" className="max-w-4xl mx-auto space-y-6">
         <motion.div variants={item} className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-[#022C22]">{t(locale, "driver.title")}</h1>
+          <h1 className="text-2xl font-semibold text-white">{t(locale, "driver.title")}</h1>
           {isDev && (
-            <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm">
+            <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm" className="text-white">
               {t(locale, "driver.seed")}
             </NeoButton>
           )}
@@ -148,26 +148,26 @@ export default function DriverDashboard() {
           <>
             {activeTicket && (
               <motion.div variants={item}>
-                <GlassCard intensity="light" glow="green" hover={false}><div className="p-6 space-y-4">
+                <GlassCard intensity="light" glow="green" hover={false} className="bg-[#0A1628]/80"><div className="p-6 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <span className="w-3 h-3 rounded-full bg-[#00D4AA] animate-pulse" />
-                      <h2 className="text-lg font-semibold text-[#022C22]">{t(locale, "driver.active")}</h2>
+                      <h2 className="text-lg font-semibold text-white">{t(locale, "driver.active")}</h2>
                     </div>
                     <StatusBadge status="assigned" locale={locale} />
                   </div>
 
-                  <div className="bg-[#F0FDF9] rounded-btn p-4 space-y-2">
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">{t(locale, "driver.ref")}</p>
-                    <p className="text-sm font-mono text-[#022C22]">{activeTicket.id}</p>
+                  <div className="bg-[#0D1E32] rounded-btn p-4 space-y-2">
+                    <p className="text-xs text-gray-400 uppercase tracking-wide">{t(locale, "driver.ref")}</p>
+                    <p className="text-sm font-mono text-white">{activeTicket.id}</p>
                   </div>
 
-                  <div className="bg-[#F0FDF9] rounded-btn p-4 space-y-2">
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">{t(locale, "driver.pickup")}</p>
-                    <p className="text-sm font-medium text-[#022C22]">{activeTicket.pickup_coords}</p>
+                  <div className="bg-[#0D1E32] rounded-btn p-4 space-y-2">
+                    <p className="text-xs text-gray-400 uppercase tracking-wide">{t(locale, "driver.pickup")}</p>
+                    <p className="text-sm font-medium text-white">{activeTicket.pickup_coords}</p>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <div className="flex items-center gap-2 text-xs text-gray-400">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -176,7 +176,7 @@ export default function DriverDashboard() {
                   </div>
 
                   <div className="space-y-3">
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">{t(locale, "driver.otp_placeholder")}</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wide">{t(locale, "driver.otp_placeholder")}</p>
                     <OtpInput
                       value={otpInputs[activeTicket.id] || ""}
                       onChange={(v) => setOtpInputs((prev) => ({ ...prev, [activeTicket.id]: v }))}
@@ -186,7 +186,7 @@ export default function DriverDashboard() {
                       disabled={(otpInputs[activeTicket.id]?.length || 0) !== 6}
                       variant="primary"
                       size="lg"
-                      className="w-full"
+                      className="w-full text-white"
                     >
                       {t(locale, "driver.deliver")}
                     </NeoButton>
@@ -198,12 +198,12 @@ export default function DriverDashboard() {
 
             {history.length > 0 && (
               <motion.div variants={item}>
-                <h2 className="text-lg font-semibold text-[#022C22] mb-3">{t(locale, "driver.history")}</h2>
+                <h2 className="text-lg font-semibold text-white mb-3">{t(locale, "driver.history")}</h2>
                 <div className="space-y-2">
                   {history.map((t) => (
-                    <GlassCard key={t.id} intensity="light" glow="green" hover={false}>
+                    <GlassCard key={t.id} intensity="light" glow="green" hover={false} className="bg-[#0A1628]/80">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 font-mono">#{t.id.slice(0, 8)}</span>
+                        <span className="text-sm text-gray-300 font-mono">#{t.id.slice(0, 8)}</span>
                         <StatusBadge status="delivered" locale={locale} />
                       </div>
                     </GlassCard>
@@ -214,12 +214,12 @@ export default function DriverDashboard() {
 
             {!activeTicket && history.length === 0 && (
               <motion.div variants={item} className="text-center py-12">
-                <svg className="w-28 h-28 mx-auto mb-4 text-[#A7F3D0]" fill="none" viewBox="0 0 80 80" stroke="currentColor" strokeWidth="1.2">
-                  <rect x="18" y="38" width="36" height="14" rx="3" stroke="currentColor" fill="#F0FDF9" />
+                <svg className="w-28 h-28 mx-auto mb-4 text-[#00D4AA]/30" fill="none" viewBox="0 0 80 80" stroke="currentColor" strokeWidth="1.2">
+                  <rect x="18" y="38" width="36" height="14" rx="3" stroke="currentColor" fill="#0D1E32" />
                   <path d="M18 42l6-16h24l8 16" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M24 26l2-6h16" stroke="currentColor" fill="none" strokeLinecap="round" />
-                  <circle cx="28" cy="56" r="6" stroke="currentColor" fill="white" />
-                  <circle cx="52" cy="56" r="6" stroke="currentColor" fill="white" />
+                  <circle cx="28" cy="56" r="6" stroke="currentColor" fill="#0A1628" />
+                  <circle cx="52" cy="56" r="6" stroke="currentColor" fill="#0A1628" />
                   <circle cx="28" cy="56" r="2" stroke="currentColor" fill="none" />
                   <circle cx="52" cy="56" r="2" stroke="currentColor" fill="none" />
                   <path d="M42 38v-9h8" stroke="currentColor" strokeLinecap="round" />
@@ -227,8 +227,8 @@ export default function DriverDashboard() {
                   <path d="M14 44h-2a2 2 0 01-2-2v-2" stroke="currentColor" strokeLinecap="round" />
                   <path d="M58 44h2a2 2 0 002-2v-2" stroke="currentColor" strokeLinecap="round" />
                 </svg>
-                <h3 className="text-lg font-medium text-[#022C22] mb-2">{t(locale, "driver.empty")}</h3>
-                <p className="text-sm text-gray-500">{t(locale, "driver.empty_sub")}</p>
+                <h3 className="text-lg font-medium text-white mb-2">{t(locale, "driver.empty")}</h3>
+                <p className="text-sm text-gray-400">{t(locale, "driver.empty_sub")}</p>
               </motion.div>
             )}
           </>

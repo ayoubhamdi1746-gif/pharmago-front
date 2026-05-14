@@ -78,7 +78,7 @@ export default function AdminPharmaciesPage() {
         animate="visible"
         className="max-w-6xl mx-auto space-y-6"
       >
-        <h1 className="text-2xl font-semibold text-[#022C22] tracking-tight">
+        <h1 className="text-2xl font-semibold text-white tracking-tight">
           {t(locale, "admin.pharmacies.title")}
         </h1>
 
@@ -89,12 +89,12 @@ export default function AdminPharmaciesPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t(locale, "admin.pharmacies.search")}
-            className="flex-1 min-w-[200px] px-4 py-2 border border-gray-200 rounded-btn text-sm focus:outline-none focus:border-[#00D4AA]"
+            className="flex-1 min-w-[200px] px-4 py-2 border border-[#00D4AA]/20 bg-[#0D1E32] rounded-btn text-sm text-white focus:outline-none focus:border-[#00D4AA] placeholder-gray-500"
           />
           <select
             value={planFilter}
             onChange={(e) => setPlanFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-btn text-sm focus:outline-none focus:border-[#00D4AA]"
+            className="px-4 py-2 border border-[#00D4AA]/20 bg-[#0D1E32] text-white rounded-btn text-sm focus:outline-none focus:border-[#00D4AA]"
           >
             <option value="">{t(locale, "admin.pharmacies.all_plans")}</option>
             {PLANS.map((p) => (
@@ -104,7 +104,7 @@ export default function AdminPharmaciesPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-btn text-sm focus:outline-none focus:border-[#00D4AA]"
+            className="px-4 py-2 border border-[#00D4AA]/20 bg-[#0D1E32] text-white rounded-btn text-sm focus:outline-none focus:border-[#00D4AA]"
           >
             <option value="">{t(locale, "admin.pharmacies.all_statuses")}</option>
             <option value="active">{t(locale, "admin.status.active")}</option>
@@ -118,11 +118,11 @@ export default function AdminPharmaciesPage() {
             <Skeleton className="h-64 w-full" />
           </div>
         ) : filtered.length > 0 ? (
-          <motion.div variants={staggerItem} className="bg-white border border-[#A7F3D0] rounded-card shadow-soft overflow-hidden">
+          <motion.div variants={staggerItem} className="bg-[#0A1628]/80 border border-[#00D4AA]/20 rounded-card shadow-soft overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-gray-500 bg-[#F0FDF9] border-b border-[#A7F3D0]">
+                  <tr className="text-left text-gray-400 bg-[#0D1E32] border-b border-[#00D4AA]/20">
                     <th className="p-3 pr-4">{t(locale, "admin.pharmacies.name")}</th>
                     <th className="p-3 pr-4">{t(locale, "admin.pharmacies.city")}</th>
                     <th className="p-3 pr-4">{t(locale, "admin.pharmacies.plan")}</th>
@@ -134,16 +134,16 @@ export default function AdminPharmaciesPage() {
                 </thead>
                 <tbody>
                   {filtered.map((p) => (
-                    <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50/50">
-                      <td className="p-3 pr-4 font-medium text-[#022C22]">{p.pharmacy_name}</td>
-                      <td className="p-3 pr-4 text-gray-500">{p.city || "—"}</td>
+                    <tr key={p.id} className="border-b border-[#00D4AA]/10 hover:bg-[#00D4AA]/5">
+                      <td className="p-3 pr-4 font-medium text-white">{p.pharmacy_name}</td>
+                      <td className="p-3 pr-4 text-gray-400">{p.city || "—"}</td>
                       <td className="p-3 pr-4">
-                        <span className="px-2 py-0.5 text-xs font-medium bg-purple-50 text-purple-600 rounded-full">
+                        <span className="px-2 py-0.5 text-xs font-medium bg-[#00D4AA]/10 text-[#00D4AA] rounded-full">
                           {p.plan}
                         </span>
                       </td>
                       <td className="p-3 pr-4">
-                        <span className={p.delivery_limit && p.delivery_count_this_month >= p.delivery_limit ? "text-red-600 font-medium" : ""}>
+                        <span className={p.delivery_limit && p.delivery_count_this_month >= p.delivery_limit ? "text-[#FF4D6D] font-medium" : "text-gray-300"}>
                           {p.delivery_count_this_month}
                           {p.delivery_limit ? ` / ${p.delivery_limit}` : ""}
                         </span>
@@ -155,8 +155,8 @@ export default function AdminPharmaciesPage() {
                         <span
                           className={`px-2 py-0.5 text-xs rounded-full ${
                             p.is_active
-                              ? "bg-[#F0FDF9] text-[#00D4AA]"
-                              : "bg-red-50 text-red-600"
+                              ? "bg-[#00D4AA]/10 text-[#00D4AA]"
+                              : "bg-[#FF4D6D]/10 text-[#FF4D6D]"
                           }`}
                         >
                           {p.is_active ? t(locale, "admin.status.active") : t(locale, "admin.status.inactive")}
@@ -166,7 +166,7 @@ export default function AdminPharmaciesPage() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => setDetailTarget(p)}
-                            className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-btn hover:bg-blue-100 transition-colors"
+                            className="px-3 py-1.5 text-xs font-medium text-[#00D4AA] bg-[#00D4AA]/10 rounded-btn hover:bg-[#00D4AA]/20 transition-colors"
                           >
                             {t(locale, "admin.pharmacies.details")}
                           </button>
@@ -174,8 +174,8 @@ export default function AdminPharmaciesPage() {
                             onClick={() => setSuspendTarget(p)}
                             className={`px-3 py-1.5 text-xs font-medium rounded-btn transition-colors ${
                               p.is_active
-                                ? "text-red-600 bg-red-50 hover:bg-red-100"
-                                : "text-[#00D4AA] bg-[#F0FDF9] hover:bg-[#D1FAE5]"
+                                ? "text-[#FF4D6D] bg-[#FF4D6D]/10 hover:bg-[#FF4D6D]/20"
+                                : "text-[#00D4AA] bg-[#00D4AA]/10 hover:bg-[#00D4AA]/20"
                             }`}
                           >
                             {p.is_active
@@ -191,7 +191,7 @@ export default function AdminPharmaciesPage() {
             </div>
           </motion.div>
         ) : (
-          <motion.div variants={staggerItem} className="text-center py-12 text-gray-400">
+          <motion.div variants={staggerItem} className="text-center py-12 text-gray-500">
             <p className="text-lg">{t(locale, "admin.pharmacies.empty")}</p>
           </motion.div>
         )}
@@ -219,45 +219,45 @@ export default function AdminPharmaciesPage() {
           <div className="space-y-3 text-sm">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className="text-gray-500">{t(locale, "admin.pharmacies.name")}</p>
-                <p className="font-medium text-[#022C22]">{detailTarget.pharmacy_name}</p>
+                <p className="text-gray-400">{t(locale, "admin.pharmacies.name")}</p>
+                <p className="font-medium text-white">{detailTarget.pharmacy_name}</p>
               </div>
               <div>
-                <p className="text-gray-500">{t(locale, "admin.pharmacies.city")}</p>
-                <p className="font-medium text-[#022C22]">{detailTarget.city || "—"}</p>
+                <p className="text-gray-400">{t(locale, "admin.pharmacies.city")}</p>
+                <p className="font-medium text-white">{detailTarget.city || "—"}</p>
               </div>
               <div>
-                <p className="text-gray-500">{t(locale, "admin.pharmacies.plan")}</p>
-                <p className="font-medium text-[#022C22]">{detailTarget.plan}</p>
+                <p className="text-gray-400">{t(locale, "admin.pharmacies.plan")}</p>
+                <p className="font-medium text-white">{detailTarget.plan}</p>
               </div>
               <div>
-                <p className="text-gray-500">{t(locale, "admin.pharmacies.revenue")}</p>
+                <p className="text-gray-400">{t(locale, "admin.pharmacies.revenue")}</p>
                 <p className="font-medium text-[#00D4AA]">{detailTarget.total_delivery_earnings.toFixed(2)} TND</p>
               </div>
               <div>
-                <p className="text-gray-500">{t(locale, "admin.pharmacies.deliveries")}</p>
-                <p className="font-medium text-[#022C22]">
+                <p className="text-gray-400">{t(locale, "admin.pharmacies.deliveries")}</p>
+                <p className="font-medium text-white">
                   {detailTarget.delivery_count_this_month}
                   {detailTarget.delivery_limit ? ` / ${detailTarget.delivery_limit}` : " / ∞"}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500">Prix</p>
-                <p className="font-medium text-[#022C22]">{detailTarget.price_tnd.toFixed(2)} TND/mois</p>
+                <p className="text-gray-400">Prix</p>
+                <p className="font-medium text-white">{detailTarget.price_tnd.toFixed(2)} TND/mois</p>
               </div>
               <div>
-                <p className="text-gray-500">{t(locale, "pharmacist.subscription.renewal")}</p>
-                <p className="font-medium text-[#022C22]">
+                <p className="text-gray-400">{t(locale, "pharmacist.subscription.renewal")}</p>
+                <p className="font-medium text-white">
                   {new Date(detailTarget.expires_at).toLocaleDateString(locale === "ar" ? "ar-TN" : "fr-TN")}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500">{t(locale, "admin.pharmacies.status")}</p>
+                <p className="text-gray-400">{t(locale, "admin.pharmacies.status")}</p>
                 <span
                   className={`px-2 py-0.5 text-xs rounded-full ${
                     detailTarget.is_active
-                      ? "bg-[#F0FDF9] text-[#00D4AA]"
-                      : "bg-red-50 text-red-600"
+                      ? "bg-[#00D4AA]/10 text-[#00D4AA]"
+                      : "bg-[#FF4D6D]/10 text-[#FF4D6D]"
                   }`}
                 >
                   {detailTarget.is_active ? t(locale, "admin.status.active") : t(locale, "admin.status.inactive")}

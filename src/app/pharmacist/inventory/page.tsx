@@ -30,7 +30,7 @@ const item = {
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-soft p-4 transition-all duration-200 hover:border-[#00D4AA] ${className}`}>
+    <div className={`bg-[#0A1628]/80 border border-[#00D4AA]/20 rounded-card shadow-soft p-4 transition-all duration-200 hover:border-[#00D4AA]/30 ${className}`}>
       {children}
     </div>
   );
@@ -122,7 +122,7 @@ export default function PharmacistInventory() {
         className="max-w-5xl mx-auto space-y-6"
       >
         <motion.div variants={item} className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-[#022C22]">
+          <h1 className="text-2xl font-semibold text-white">
             {t(locale, "pharmacist.inventory.title")}
           </h1>
           <button
@@ -154,22 +154,22 @@ export default function PharmacistInventory() {
           {isLoading ? (
             <div className="space-y-2">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-16 bg-gray-100 rounded-card animate-pulse" />
+                <div key={i} className="h-16 bg-[#0A1628]/80 rounded-card animate-pulse" />
               ))}
             </div>
           ) : (medications || []).length === 0 ? (
             <Card>
-              <p className="text-sm text-gray-500 text-center py-4">{t(locale, "pharmacist.inventory.empty")}</p>
+              <p className="text-sm text-gray-400 text-center py-4">{t(locale, "pharmacist.inventory.empty")}</p>
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {(medications || []).map((m) => (
                 <div key={m.id} onClick={() => openEdit(m)} className="cursor-pointer">
-                <Card className="hover:shadow-[0_0_20px_rgba(0,212,170,0.15)]">
+                <Card className="hover:shadow-[0_0_20px_rgba(0,212,170,0.15)] bg-[#0A1628]/80">
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="text-sm font-medium text-[#022C22]">{m.medication_name}</p>
-                      <p className="text-xs text-gray-500">{m.dosage}</p>
+                      <p className="text-sm font-medium text-white">{m.medication_name}</p>
+                      <p className="text-xs text-gray-400">{m.dosage}</p>
                     </div>
                     <span
                       className={`text-sm font-bold px-2 py-0.5 rounded ${
@@ -180,8 +180,8 @@ export default function PharmacistInventory() {
                     </span>
                   </div>
                   <div className="mt-2 flex items-center gap-2">
-                    <span className={`inline-block w-2 h-2 rounded-full ${m.is_available ? "bg-[#00C853]" : "bg-gray-300"}`} />
-                    <span className="text-xs text-gray-500">
+                    <span className={`inline-block w-2 h-2 rounded-full ${m.is_available ? "bg-[#00C853]" : "bg-gray-600"}`} />
+                    <span className="text-xs text-gray-400">
                       {m.is_available ? t(locale, "pharmacist.inventory.available") : t(locale, "pharmacist.inventory.unavailable")}
                     </span>
                   </div>
@@ -199,34 +199,34 @@ export default function PharmacistInventory() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               onSubmit={handleSubmit}
-              className="relative bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-soft p-6 max-w-md w-full space-y-4"
+              className="relative bg-[#0A1628]/95 backdrop-blur-xl border border-[#00D4AA]/20 rounded-card shadow-soft p-6 max-w-md w-full space-y-4"
             >
-              <h3 className="text-lg font-semibold text-[#022C22]">
+              <h3 className="text-lg font-semibold text-white">
                 {editId ? t(locale, "pharmacist.inventory.edit_title") : t(locale, "pharmacist.inventory.add_title")}
               </h3>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">{t(locale, "pharmacist.inventory.name_label")}</label>
+                <label className="block text-sm font-medium text-gray-400 mb-1">{t(locale, "pharmacist.inventory.name_label")}</label>
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)} required
-                  className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-[#022C22] text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent" />
+                  className="w-full px-3 py-2.5 rounded-btn border border-[#00D4AA]/20 bg-[#0D1E32] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent placeholder-gray-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">{t(locale, "pharmacist.inventory.dosage_label")}</label>
+                <label className="block text-sm font-medium text-gray-400 mb-1">{t(locale, "pharmacist.inventory.dosage_label")}</label>
                 <input type="text" value={dosage} onChange={(e) => setDosage(e.target.value)} required
-                  className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-[#022C22] text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent" placeholder={t(locale, "pharmacist.inventory.dosage_placeholder")} />
+                  className="w-full px-3 py-2.5 rounded-btn border border-[#00D4AA]/20 bg-[#0D1E32] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent placeholder-gray-500" placeholder={t(locale, "pharmacist.inventory.dosage_placeholder")} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">{t(locale, "pharmacist.inventory.stock_label")}</label>
+                <label className="block text-sm font-medium text-gray-400 mb-1">{t(locale, "pharmacist.inventory.stock_label")}</label>
                 <input type="number" value={stock} onChange={(e) => setStock(e.target.value)} min="0"
-                  className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-[#022C22] text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent" />
+                  className="w-full px-3 py-2.5 rounded-btn border border-[#00D4AA]/20 bg-[#0D1E32] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent" />
               </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" id="available" checked={available} onChange={(e) => setAvailable(e.target.checked)}
-                  className="w-4 h-4 rounded border-[#A7F3D0] text-[#00D4AA] focus:ring-[#00D4AA]" />
-                <label htmlFor="available" className="text-sm text-gray-600">{t(locale, "pharmacist.inventory.available_label")}</label>
+                  className="w-4 h-4 rounded border-[#00D4AA]/40 text-[#00D4AA] focus:ring-[#00D4AA] bg-[#0D1E32]" />
+                <label htmlFor="available" className="text-sm text-gray-400">{t(locale, "pharmacist.inventory.available_label")}</label>
               </div>
               <div className="flex gap-3 justify-end">
                 <button type="button" onClick={resetForm}
-                  className="px-4 py-2 rounded-btn text-sm font-medium text-gray-600 bg-white border border-[#A7F3D0] hover:bg-[#F0FDF9] transition-colors duration-200">
+                  className="px-4 py-2 rounded-btn text-sm font-medium text-gray-400 bg-[#0D1E32] border border-[#00D4AA]/20 hover:border-[#00D4AA]/40 transition-colors duration-200">
                   {t(locale, "pharmacist.inventory.cancel")}
                 </button>
                 <button type="submit" disabled={submitting}

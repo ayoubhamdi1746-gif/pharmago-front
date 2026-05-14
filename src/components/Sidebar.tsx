@@ -79,7 +79,7 @@ export default function Sidebar({ role }: { role: Role }) {
   };
 
   return (
-    <aside className="w-64 bg-white min-h-screen p-4 hidden md:flex flex-col border-r border-[#A7F3D0]">
+    <aside className="w-64 bg-[#0A1628] min-h-screen p-4 hidden md:flex flex-col border-r border-[#00D4AA]/10">
       <div className="flex items-center gap-3 mb-8 px-3">
         <Logo className="h-7 w-auto" />
       </div>
@@ -87,10 +87,10 @@ export default function Sidebar({ role }: { role: Role }) {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className={`flex items-center gap-2 px-3 py-2 mx-3 mb-6 rounded-lg ${colors.bg}`}
+        className="flex items-center gap-2 px-3 py-2 mx-3 mb-6 rounded-lg bg-[#00D4AA]/10"
       >
-        <span className={`w-2 h-2 rounded-full ${colors.dot}`} />
-        <span className={`text-xs font-medium ${colors.text}`}>
+        <span className="w-2 h-2 rounded-full bg-[#00D4AA] animate-pulse" />
+        <span className="text-xs font-medium text-[#00D4AA]">
           {t(locale, role === "patient" ? "sidebar.patient" : `sidebar.${role}`)}
         </span>
       </motion.div>
@@ -110,11 +110,14 @@ export default function Sidebar({ role }: { role: Role }) {
                 <div
                   className={`relative px-3 py-2.5 rounded-btn text-sm font-medium transition-all duration-200 flex items-center gap-3 ${
                     active
-                      ? "text-[#00D4AA] bg-[#F0FDF9] border-l-[3px] border-[#00D4AA]"
-                      : "text-gray-500 hover:text-[#022C22] hover:bg-[#F0FDF9] border-l-[3px] border-transparent"
+                      ? "text-[#00D4AA] bg-[#00D4AA]/10 border-l-[3px] border-[#00D4AA] shadow-[0_0_20px_rgba(0,212,170,0.15)]"
+                      : "text-gray-400 hover:text-[#00D4AA] hover:bg-[rgba(0,201,167,0.08)] border-l-[3px] border-transparent"
                   }`}
                 >
-                  {Icon && <Icon className={`w-4 h-4 ${active ? "text-[#00D4AA]" : "text-gray-400"}`} />}
+                  {active && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-gradient-to-b from-[#00D4AA] via-[#00E676] to-[#00D4AA] rounded-r-full shadow-[0_0_10px_rgba(0,212,170,0.5)]" />
+                  )}
+                  {Icon && <Icon className={`w-4 h-4 ${active ? "text-[#00D4AA]" : "text-gray-500"}`} />}
                   {t(locale, item.key)}
                 </div>
               </Link>
@@ -123,14 +126,14 @@ export default function Sidebar({ role }: { role: Role }) {
         })}
       </motion.nav>
 
-      <div className="pt-4 border-t border-[#A7F3D0] space-y-3">
+      <div className="pt-4 border-t border-[#00D4AA]/10 space-y-3">
         <button
           onClick={handleLogout}
           className="w-full px-3 py-2 rounded-btn text-sm font-medium text-gray-500 hover:text-[#FF4D6D] hover:bg-[#FF4D6D]/10 transition-all duration-200 text-left"
         >
           {t(locale, "nav.logout")}
         </button>
-        <p className="text-[10px] text-gray-400 text-center">{t(locale, "sidebar.version")}</p>
+        <p className="text-[10px] text-gray-600 text-center">{t(locale, "sidebar.version")}</p>
       </div>
     </aside>
   );

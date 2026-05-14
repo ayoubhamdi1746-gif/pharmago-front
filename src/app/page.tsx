@@ -23,27 +23,20 @@ function Reveal({ children, className = "", delay = 0 }: { children: React.React
   );
 }
 
-function useLiveCounter(base: number, incrementInterval = 4000) {
+function useLiveCounter(target: number) {
   const [count, setCount] = useState(0);
-  const started = useRef(false);
   useEffect(() => {
-    if (started.current) return;
-    started.current = true;
+    let start = 0;
+    const end = target;
     const duration = 2000;
-    const startTime = performance.now();
-    let raf = requestAnimationFrame(function tick(now) {
-      const t = Math.min((now - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setCount(Math.round(eased * base));
-      if (t < 1) raf = requestAnimationFrame(tick);
-    });
-    return () => cancelAnimationFrame(raf);
-  }, [base]);
-  useEffect(() => {
-    if (count < base) return;
-    const interval = setInterval(() => setCount((c) => c + 1), incrementInterval);
-    return () => clearInterval(interval);
-  }, [count, base, incrementInterval]);
+    const step = Math.ceil(end / (duration / 16));
+    const timer = setInterval(() => {
+      start = Math.min(start + step, end);
+      setCount(start);
+      if (start >= end) clearInterval(timer);
+    }, 16);
+    return () => clearInterval(timer);
+  }, [target]);
   return count;
 }
 
@@ -121,10 +114,10 @@ function ScrollIndicator({ locale }: { locale: Locale }) {
       transition={{ delay: 1.2, duration: 0.6 }}
       className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
     >
-      <div className="w-6 h-10 rounded-full border border-[#A7F3D0] flex justify-center pt-2">
+      <div className="w-6 h-10 rounded-full border border-[#00D4AA]/30 flex justify-center pt-2">
         <div className="w-1 h-2 rounded-full bg-[#00D4AA] animate-[scrollDot_1.5s_ease-in-out_infinite]" />
       </div>
-      <span className="text-[10px] text-[#065F46] font-medium tracking-widest uppercase">
+      <span className="text-[10px] text-[#64748B] font-medium tracking-widest uppercase">
         {t(locale, "scroll.hint")}
       </span>
       <style>{`
@@ -237,7 +230,7 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [locale, setLocale] = useState<Locale>("fr");
   const [mobileMenu, setMobileMenu] = useState(false);
-  const secureCount = useLiveCounter(1247, 4000);
+  const secureCount = useLiveCounter(1295);
   const lineRef = useRef<SVGLineElement>(null);
   const lineInView = useInView(lineRef, { once: true, margin: "-100px" });
 
@@ -261,7 +254,8 @@ export default function LandingPage() {
   }, [locale]);
 
   const isRtl = locale === "ar";
-  const heroWords = `${t(locale, "hero.headline1")} ${t(locale, "hero.headline2")}`.split(" ");
+  const headline1 = t(locale, "hero.headline1");
+  const headline2 = t(locale, "hero.headline2");
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -272,19 +266,19 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#022C22] overflow-x-hidden">
+    <div className="min-h-screen bg-[#020814] text-white overflow-x-hidden">
 
       {/* NAVBAR */}
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? "bg-white/90 backdrop-blur-xl border-b border-[#A7F3D0]" : "bg-transparent"
+          scrolled ? "bg-[#020814]/80 backdrop-blur-xl border-b border-[#00D4AA]/20" : "bg-transparent"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Logo className="h-8 w-auto" />
           <div className="hidden md:flex items-center gap-4">
             <LocaleToggle locale={locale} onToggle={() => setLocale(isRtl ? "fr" : "ar")} />
-            <a href="/register/pharmacy" className="px-4 py-2 rounded-btn text-sm font-medium text-[#00D4AA] border border-[#A7F3D0] hover:border-[#00D4AA] hover:bg-[#F0FDF9] transition-all duration-200">
+            <a href="/register/pharmacy" className="px-4 py-2 rounded-btn text-sm font-medium text-[#00D4AA] border border-[#00D4AA]/30 hover:border-[#00D4AA] hover:bg-[#00D4AA]/10 transition-all duration-200">
               Inscrire ma pharmacie →
             </a>
             <a href="/login" className="px-4 py-2 rounded-btn text-sm font-medium text-white bg-[#00D4AA] hover:bg-[#009B7D] transition-all duration-200">
@@ -292,7 +286,7 @@ export default function LandingPage() {
             </a>
             <DemoButton locale={locale} />
           </div>
-          <button className="md:hidden w-9 h-9 flex items-center justify-center text-[#6B7280]" onClick={() => setMobileMenu(!mobileMenu)}>
+          <button className="md:hidden w-9 h-9 flex items-center justify-center text-[#64748B]" onClick={() => setMobileMenu(!mobileMenu)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               {mobileMenu ? (
                 <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
@@ -303,9 +297,9 @@ export default function LandingPage() {
           </button>
         </div>
         {mobileMenu && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="md:hidden fixed inset-0 top-16 z-40 bg-white/95 backdrop-blur-xl flex flex-col items-center justify-center gap-6">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="md:hidden fixed inset-0 top-16 z-40 bg-[#020814]/95 backdrop-blur-xl flex flex-col items-center justify-center gap-6">
             <LocaleToggle locale={locale} onToggle={() => setLocale(isRtl ? "fr" : "ar")} />
-            <a href="/register/pharmacy" className="px-4 py-2 rounded-btn text-sm font-medium text-[#00D4AA] border border-[#A7F3D0]">
+            <a href="/register/pharmacy" className="px-4 py-2 rounded-btn text-sm font-medium text-[#00D4AA] border border-[#00D4AA]/30">
               Inscrire ma pharmacie →
             </a>
             <a href="/login" className="px-4 py-2 rounded-btn text-sm font-medium text-white bg-[#00D4AA]">
@@ -317,10 +311,11 @@ export default function LandingPage() {
       </nav>
 
       {/* HERO */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-white">
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-[#020814]">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute rounded-full" style={{ width: "60vw", height: "60vw", top: "-10%", right: "-15%", background: "radial-gradient(circle, rgba(0,212,170,0.15) 0%, transparent 70%)", animation: "blob1 20s ease-in-out infinite alternate" }} />
-          <div className="absolute rounded-full" style={{ width: "50vw", height: "50vw", bottom: "-10%", left: "-10%", background: "radial-gradient(circle, rgba(5,150,105,0.08) 0%, transparent 70%)", animation: "blob2 18s ease-in-out infinite alternate" }} />
+          <div className="absolute rounded-full" style={{ width: "60vw", height: "60vw", top: "-10%", right: "-15%", background: "radial-gradient(circle, rgba(0,212,170,0.25) 0%, transparent 70%)", animation: "blob1 20s ease-in-out infinite alternate" }} />
+          <div className="absolute rounded-full" style={{ width: "50vw", height: "50vw", bottom: "-10%", left: "-10%", background: "radial-gradient(circle, rgba(0,212,170,0.15) 0%, transparent 70%)", animation: "blob2 18s ease-in-out infinite alternate" }} />
+          <div className="absolute rounded-full" style={{ width: "40vw", height: "40vw", top: "40%", left: "30%", background: "radial-gradient(circle, rgba(0,212,170,0.1) 0%, transparent 60%)", animation: "blob3 25s ease-in-out infinite alternate" }} />
           {Array.from({ length: 25 }).map((_, i) => (
             <div key={i} className="absolute rounded-full bg-[#00D4AA]" style={{
               width: (i % 3 === 0 ? 2 : 1) + "px",
@@ -342,31 +337,36 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-6">
               <motion.div variants={staggerItem}>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F0FDF9] text-xs font-medium text-[#00D4AA] border border-[#A7F3D0]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary-400 animate-pulse" />
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#00D4AA]/10 text-xs font-medium text-[#00D4AA] border border-[#00D4AA]/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00D4AA] animate-pulse" />
                   {t(locale, "hero.badge")}
                 </div>
               </motion.div>
 
               <motion.h1 variants={staggerItem} className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.1]">
-                {heroWords.map((word, i) => (
                   <motion.span
-                    key={i}
-                    initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    transition={{ delay: 0.3 + i * 0.06, duration: 0.5, ease: "easeOut" }}
-                    className="inline-block mr-[0.3em]"
+                    initial={{ opacity: 0, y: 40, clipPath: "inset(0 0 100% 0)" }}
+                    animate={{ opacity: 1, y: 0, clipPath: "inset(0 0 0% 0)" }}
+                    transition={{ delay: 0.3, duration: 0.5, ease: "easeOut" }}
+                    className="block"
                   >
-                    {word === t(locale, "hero.headline2") ? <span className="text-[#00D4AA]">{word}</span> : word}
+                    {headline1}
                   </motion.span>
-                ))}
-              </motion.h1>
+                  <motion.span
+                    initial={{ opacity: 0, y: 40, clipPath: "inset(0 0 100% 0)" }}
+                    animate={{ opacity: 1, y: 0, clipPath: "inset(0 0 0% 0)" }}
+                    transition={{ delay: 0.5, duration: 0.5, ease: "easeOut" }}
+                    className="block text-[#00D4AA]"
+                  >
+                    {headline2}
+                  </motion.span>
+                </motion.h1>
 
               <motion.p
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.4 }}
-                className="text-base text-[#065F46] max-w-md leading-relaxed"
+                className="text-base text-[#E2E8F0] max-w-md leading-relaxed"
               >
                 {t(locale, "hero.subheadline")}
               </motion.p>
@@ -377,9 +377,9 @@ export default function LandingPage() {
                 transition={{ delay: 1, duration: 0.4 }}
                 className="flex items-center gap-3"
               >
-                <span className="w-2 h-2 rounded-full bg-primary-400 animate-pulse" />
-                <span className="text-sm text-gray-500">{t(locale, "hero.counter")}</span>
-                <span className="text-lg font-bold text-primary-400 tabular-nums font-mono">
+                <span className="w-2 h-2 rounded-full bg-[#00D4AA] animate-pulse" />
+                <span className="text-sm text-[#64748B]">{t(locale, "hero.counter")}</span>
+                <span className="text-lg font-bold text-[#00D4AA] tabular-nums font-mono">
                   {secureCount.toLocaleString()}
                 </span>
               </motion.div>
@@ -399,7 +399,7 @@ export default function LandingPage() {
                 </MagneticButton>
                 <MagneticButton
                   onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
-                  className="px-6 py-3 rounded-btn text-sm font-medium border border-[#A7F3D0] text-[#059669] hover:bg-[#F0FDF9] transition-all duration-200 active:scale-[0.96]"
+                  className="px-6 py-3 rounded-btn text-sm font-medium border border-[#00D4AA]/30 text-[#00D4AA] hover:bg-[#00D4AA]/10 transition-all duration-200 active:scale-[0.96]"
                 >
                   {t(locale, "hero.cta.secondary")}
                 </MagneticButton>
@@ -420,18 +420,18 @@ export default function LandingPage() {
                   <div
                     className="p-5 rounded-xl relative"
                     style={{
-                      background: "#F0FDF9",
+                      background: "#0A1628",
                       backdropFilter: "blur(24px)",
-                      border: "1px solid #A7F3D0",
-                      boxShadow: "0 4px 20px rgba(0,212,170,0.1), 0 0 0 1px rgba(0,212,170,0.05)",
+                      border: "1px solid rgba(0,212,170,0.2)",
+                      boxShadow: "0 4px 20px rgba(0,212,170,0.15), 0 0 0 1px rgba(0,212,170,0.1)",
                       borderRadius: "16px",
                     }}
                   >
-                    <div className="absolute top-0 left-4 right-4 h-0.5 rounded-full" style={{ background: "linear-gradient(90deg, transparent, rgba(0,212,170,0.4), transparent)", filter: "blur(1px)" }} />
-                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#A7F3D0]">
+                    <div className="absolute top-0 left-4 right-4 h-0.5 rounded-full" style={{ background: "linear-gradient(90deg, transparent, rgba(0,212,170,0.6), transparent)", filter: "blur(1px)" }} />
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#00D4AA]/20">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-[#00D4AA] animate-pulse" />
-                        <span className="text-xs font-medium text-[#022C22]">{t(locale, "queue.title")}</span>
+                        <span className="text-xs font-medium text-white">{t(locale, "queue.title")}</span>
                       </div>
                       <div className="flex gap-1.5">
                         <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
@@ -442,11 +442,11 @@ export default function LandingPage() {
 
                     <div className="space-y-2.5">
                       {prescriptionCards.map((p, i) => (
-                        <div key={i} className={`rounded-lg p-3 border-l-2 ${p.color}`} style={{ background: "rgba(0,212,170,0.04)", backdropFilter: "blur(12px)" }}>
+                        <div key={i} className={`rounded-lg p-3 border-l-2 ${p.color}`} style={{ background: "rgba(0,212,170,0.08)", backdropFilter: "blur(12px)" }}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2.5">
                               <span className={`w-1.5 h-1.5 rounded-full ${p.dot}`} />
-                              <span className="text-xs text-[#065F46] font-medium">{p.drug}</span>
+                              <span className="text-xs text-[#E2E8F0] font-medium">{p.drug}</span>
                             </div>
                             <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${p.badgeClass}`}>{p.label}</span>
                           </div>
@@ -458,8 +458,8 @@ export default function LandingPage() {
                       <div className="h-9 rounded-btn bg-[#00D4AA]/20 flex items-center justify-center cursor-default">
                         <span className="text-xs font-medium text-[#00D4AA]">{t(locale, "queue.verify")}</span>
                       </div>
-                      <div className="h-9 rounded-btn bg-[#DCFCE7] flex items-center justify-center cursor-default">
-                        <span className="text-xs font-medium text-[#065F46]">{t(locale, "queue.dispense")}</span>
+                      <div className="h-9 rounded-btn bg-[#00D4AA]/10 flex items-center justify-center cursor-default">
+                        <span className="text-xs font-medium text-[#E2E8F0]">{t(locale, "queue.dispense")}</span>
                       </div>
                     </div>
                   </div>
@@ -473,20 +473,20 @@ export default function LandingPage() {
       </section>
 
       {/* TRUST BAR */}
-      <section className="relative border-t border-[#A7F3D0] py-5 overflow-hidden bg-[#F0FDF9]">
+      <section className="relative border-t border-[#00D4AA]/10 py-5 overflow-hidden bg-[#0A1628]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center gap-4 mb-3">
-            <span className="text-[10px] text-[#065F46] font-semibold uppercase tracking-[0.15em] whitespace-nowrap">
+            <span className="text-[10px] text-[#00D4AA] font-semibold uppercase tracking-[0.15em] whitespace-nowrap">
               {t(locale, "trust.label")}
             </span>
-            <div className="flex-1 h-px bg-[#A7F3D0]" />
+            <div className="flex-1 h-px bg-[#00D4AA]/20" />
           </div>
           <div className="overflow-hidden">
             <div className="flex gap-8" style={{ width: "max-content", animation: "trustScroll 40s linear infinite" }}>
               {[...Array(2)].map((_, loop) => (
                 <div key={loop} className="flex gap-8 items-center">
                   {["Fernet-256", "HMAC-SHA256", "bcrypt", "JWT RS256", "Rate Limiting", "AES Encryption", "Zero PII Logs", "OTP Lockout", "Audit Trail"].map((item) => (
-                    <div key={item} className="flex items-center gap-1.5 text-[#6B7280] whitespace-nowrap">
+                    <div key={item} className="flex items-center gap-1.5 text-[#64748B] whitespace-nowrap">
                       <span className="text-[#00D4AA] text-xs">.</span>
                       <span className="text-xs font-mono">{item}</span>
                     </div>
@@ -502,12 +502,12 @@ export default function LandingPage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section id="how-it-works" className="relative py-24 bg-[#F0FDF9]">
+      <section id="how-it-works" className="relative py-24 bg-[#020814]">
         <div className="max-w-7xl mx-auto px-6">
           <Reveal>
             <div className="text-center mb-16">
               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">{t(locale, "section.fonctionnement")}</span>
-              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-[#022C22]">{t(locale, "section.fonctionnement.title")}</h2>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">{t(locale, "section.fonctionnement.title")}</h2>
             </div>
           </Reveal>
 
@@ -521,7 +521,7 @@ export default function LandingPage() {
                   <stop offset="100%" stopColor="transparent" />
                 </linearGradient>
               </defs>
-              <line x1="0" y1="4" x2="800" y2="4" stroke="#A7F3D0" strokeWidth="1.5" strokeDasharray="6 8" />
+              <line x1="0" y1="4" x2="800" y2="4" stroke="rgba(0,212,170,0.2)" strokeWidth="1.5" strokeDasharray="6 8" />
               <line ref={lineRef} x1="0" y1="4" x2="800" y2="4" stroke="url(#flowGrad)" strokeWidth="2" strokeDasharray="6 8" strokeDashoffset={lineInView ? "0" : "800"} className={lineInView ? "flow-line" : ""} />
             </svg>
             <style>{`.flow-line { animation: flowDash 1.5s linear infinite; } @keyframes flowDash { to { stroke-dashoffset: -28; } }`}</style>
@@ -532,12 +532,18 @@ export default function LandingPage() {
               { num: 3, icon: TruckIcon, titleKey: "step3.title", descKey: "step3.desc" },
             ].map((step, i) => (
               <Reveal key={step.num} delay={i * 0.1}>
-                <div className="relative bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-[0_4px_20px_rgba(0,212,170,0.1)] p-8 text-center md:text-left transition-all duration-300 hover:border-[#00D4AA] hover:shadow-[0_8px_30px_rgba(0,212,170,0.2)]">
+                <motion.div
+                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className="relative bg-[#0A1628] border border-[#00D4AA]/20 rounded-card shadow-[0_4px_20px_rgba(0,212,170,0.1)] p-8 text-center md:text-left transition-all duration-300 hover:border-[#00D4AA] hover:shadow-[0_8px_30px_rgba(0,212,170,0.25)]"
+                >
                   <span className="text-6xl font-bold text-[#00D4AA]/20 block mb-4 tracking-tight leading-none"><AnimatedStepNumber target={step.num} inView={lineInView} /></span>
                   <div className="mb-4 flex justify-center md:justify-start">{step.icon}</div>
-                  <h3 className="text-lg font-semibold text-[#022C22] mb-2">{t(locale, step.titleKey)}</h3>
-                  <p className="text-sm text-[#065F46] leading-relaxed">{t(locale, step.descKey)}</p>
-                </div>
+                  <h3 className="text-lg font-semibold text-white mb-2">{t(locale, step.titleKey)}</h3>
+                  <p className="text-sm text-[#E2E8F0] leading-relaxed">{t(locale, step.descKey)}</p>
+                </motion.div>
               </Reveal>
             ))}
           </div>
@@ -545,12 +551,12 @@ export default function LandingPage() {
       </section>
 
       {/* FOR WHOM */}
-      <section className="relative py-24 bg-[#DCFCE7]">
+      <section className="relative py-24 bg-[#0D1E32]">
         <div className="max-w-7xl mx-auto px-6">
           <Reveal>
             <div className="text-center mb-16">
               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">{t(locale, "section.cible")}</span>
-              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-[#022C22]">{t(locale, "section.cible.title")}</h2>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">{t(locale, "section.cible.title")}</h2>
             </div>
           </Reveal>
 
@@ -561,18 +567,24 @@ export default function LandingPage() {
               { roleKey: "medecin", icon: KeyIcon, benefitKeys: ["medecin.b1", "medecin.b2", "medecin.b3"] },
             ].map((item, i) => (
               <Reveal key={item.roleKey} delay={i * 0.1}>
-                <div className="bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-[0_4px_20px_rgba(0,212,170,0.1)] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#00D4AA] hover:shadow-[0_8px_30px_rgba(0,212,170,0.2)]">
+                <motion.div
+                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className="bg-[#0A1628] border border-[#00D4AA]/20 rounded-card shadow-[0_4px_20px_rgba(0,212,170,0.1)] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#00D4AA] hover:shadow-[0_8px_30px_rgba(0,212,170,0.25)]"
+                >
                   <div className="w-12 h-12 rounded-lg bg-[#00D4AA]/10 flex items-center justify-center mb-4">{item.icon}</div>
-                  <h3 className="text-lg font-semibold text-[#022C22] mb-3">{t(locale, item.roleKey)}</h3>
+                  <h3 className="text-lg font-semibold text-white mb-3">{t(locale, item.roleKey)}</h3>
                   <ul className="space-y-2">
                     {item.benefitKeys.map((bk) => (
-                      <li key={bk} className="text-sm text-[#065F46] flex items-start gap-2">
+                      <li key={bk} className="text-sm text-[#E2E8F0] flex items-start gap-2">
                         <span className="text-[#00D4AA] mt-0.5">{"\u2713"}</span>
                         <span>{t(locale, bk)}</span>
                       </li>
                     ))}
                   </ul>
-                </div>
+                </motion.div>
               </Reveal>
             ))}
           </div>
@@ -580,13 +592,13 @@ export default function LandingPage() {
       </section>
 
       {/* SECURITY */}
-      <section className="relative py-24 bg-[#022C22]">
+      <section className="relative py-24 bg-[#020814]">
         <div className="max-w-7xl mx-auto px-6">
           <Reveal>
             <div className="text-center mb-16">
               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">{t(locale, "section.securite")}</span>
               <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">{t(locale, "section.securite.title")}</h2>
-              <p className="text-sm text-[#A7F3D0] mt-3 max-w-lg mx-auto">{t(locale, "section.securite.sub")}</p>
+              <p className="text-sm text-[#64748B] mt-3 max-w-lg mx-auto">{t(locale, "section.securite.sub")}</p>
             </div>
           </Reveal>
 
@@ -605,12 +617,12 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ duration: 0.5, delay: i * 0.08, ease: "easeOut" }}
-                className="bg-white/5 border border-white/10 rounded-card shadow-[0_4px_20px_rgba(0,0,0,0.2)] p-5 transition-all duration-300 group hover:border-[#00D4AA] hover:shadow-[0_0_30px_rgba(0,212,170,0.25)]">
+                className="bg-[#0A1628] border border-[#00D4AA]/20 rounded-card shadow-[0_4px_20px_rgba(0,0,0,0.3)] p-5 transition-all duration-300 group hover:border-[#00D4AA] hover:shadow-[0_0_30px_rgba(0,212,170,0.3)]">
                   <div className="w-10 h-10 rounded-lg bg-[#00D4AA]/10 flex items-center justify-center mb-3 transition-all duration-300 group-hover:scale-115 group-hover:bg-[#00D4AA]/20">
                     {card.icon}
                   </div>
                   <h3 className="text-sm font-semibold text-white mb-1">{t(locale, card.titleKey)}</h3>
-                  <p className="text-xs text-[#A7F3D0] leading-relaxed">{t(locale, card.descKey)}</p>
+                  <p className="text-xs text-[#E2E8F0] leading-relaxed">{t(locale, card.descKey)}</p>
               </motion.div>
             ))}
           </div>
@@ -618,12 +630,12 @@ export default function LandingPage() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="relative py-24 bg-white">
+      <section id="pricing" className="relative py-24 bg-[#0D1E32]">
         <div className="max-w-6xl mx-auto px-6">
           <Reveal>
             <div className="text-center mb-16">
-              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary-500">{t(locale, "section.tarifs")}</span>
-              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-[#022C22]">{t(locale, "section.tarifs.title")}</h2>
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">{t(locale, "section.tarifs")}</span>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">{t(locale, "section.tarifs.title")}</h2>
             </div>
           </Reveal>
 
@@ -634,37 +646,41 @@ export default function LandingPage() {
               { plan: "enterprise", price: 900, popular: false },
             ].map((tier, i) => (
               <Reveal key={tier.plan} delay={i * 0.1}>
-                <div
-                  className={`relative bg-[#F0FDF9] border rounded-card p-6 transition-all duration-300 ${
+                <motion.div
+                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className={`relative bg-[#0A1628] border rounded-card p-6 transition-all duration-300 ${
                     tier.popular
-                      ? "border-primary-400 shadow-[0_8px_30px_rgba(0,212,170,0.2)] scale-105"
-                      : "border-[#A7F3D0] shadow-[0_4px_20px_rgba(0,212,170,0.1)] hover:border-primary-300 hover:shadow-[0_8px_30px_rgba(0,212,170,0.15)]"
+                      ? "border-[#00D4AA] shadow-[0_8px_30px_rgba(0,212,170,0.25)] scale-105"
+                      : "border-[#00D4AA]/20 shadow-[0_4px_20px_rgba(0,212,170,0.1)] hover:border-[#00D4AA]/50 hover:shadow-[0_8px_30px_rgba(0,212,170,0.2)]"
                   }`}
                 >
                   {tier.popular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-primary-500 text-white text-[10px] font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                      <span className="bg-[#00D4AA] text-white text-[10px] font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
                         {t(locale, "pricing.popular")}
                       </span>
                     </div>
                   )}
                   <div className="text-center mb-6">
-                    <h3 className="text-lg font-semibold text-[#022C22] mb-2">{t(locale, `pricing.${tier.plan}.title`)}</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2">{t(locale, `pricing.${tier.plan}.title`)}</h3>
                     <div className="flex items-baseline justify-center gap-1">
-                      <span className="text-4xl font-bold text-[#022C22]">{tier.price}</span>
-                      <span className="text-sm text-[#6B7280]">TND</span>
-                      <span className="text-xs text-[#6B7280]">/{t(locale, "pricing.period")}</span>
+                      <span className="text-4xl font-bold text-white">{tier.price}</span>
+                      <span className="text-sm text-[#64748B]">TND</span>
+                      <span className="text-xs text-[#64748B]">/{t(locale, "pricing.period")}</span>
                     </div>
                   </div>
                   <ul className="space-y-3 mb-6">
                     {(tier.plan === "starter" ? [1, 2, 3] : tier.plan === "pro" ? [1, 2, 3, 4] : [1, 2, 3, 4, 5]).map((n) => (
-                      <li key={n} className="flex items-center gap-2 text-sm text-[#065F46]">
-                        <span className="w-1 h-1 rounded-full bg-primary-500" />
+                      <li key={n} className="flex items-center gap-2 text-sm text-[#E2E8F0]">
+                        <span className="w-1 h-1 rounded-full bg-[#00D4AA]" />
                         {t(locale, `pricing.${tier.plan}.feature${n}`)}
                       </li>
                     ))}
                   </ul>
-                </div>
+                </motion.div>
               </Reveal>
             ))}
           </div>
@@ -672,15 +688,15 @@ export default function LandingPage() {
       </section>
 
       {/* DEMO REQUEST */}
-      <section id="demo-form" className="relative py-24 bg-[#F0FDF9]">
+      <section id="demo-form" className="relative py-24 bg-[#020814]">
         <div className="max-w-lg mx-auto px-6">
           <Reveal>
-            <div className="bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-[0_4px_20px_rgba(0,212,170,0.1)] p-8 md:p-10">
+            <div className="bg-[#0A1628] border border-[#00D4AA]/20 rounded-card shadow-[0_4px_20px_rgba(0,212,170,0.1)] p-8 md:p-10">
               {!submitted ? (
                 <>
                   <div className="text-center mb-8">
-                    <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-[#022C22]">{t(locale, "demo.title")}</h2>
-                    <p className="text-sm text-[#6B7280] mt-2">{t(locale, "demo.sub")}</p>
+                    <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">{t(locale, "demo.title")}</h2>
+                    <p className="text-sm text-[#64748B] mt-2">{t(locale, "demo.sub")}</p>
                   </div>
 
                   <form onSubmit={handleFormSubmit} className="space-y-4">
@@ -694,11 +710,11 @@ export default function LandingPage() {
                           onFocus={() => setFocused(field)}
                           onBlur={() => setFocused(null)}
                           required
-                          className="w-full px-4 pt-6 pb-2 rounded-btn bg-white border border-[#A7F3D0] text-[#022C22] text-sm placeholder-transparent text-start focus:outline-none focus:border-[#00D4AA] focus:shadow-[0_0_0_3px_rgba(0,212,170,0.15)] transition-all duration-200 peer"
+                          className="w-full px-4 pt-6 pb-2 rounded-btn bg-[#0D1E32] border border-[#00D4AA]/20 text-white text-sm placeholder-transparent text-start focus:outline-none focus:border-[#00D4AA] focus:shadow-[0_0_0_3px_rgba(0,212,170,0.15)] transition-all duration-200 peer"
                           placeholder={t(locale, `demo.${field}`)}
                         />
                         <label htmlFor={`demo-${field}`} className={`absolute start-4 transition-all duration-200 pointer-events-none ${
-                          focused === field || form[field] ? "top-2 text-[10px] text-[#00D4AA]" : "top-3.5 text-sm text-[#6B7280]"
+                          focused === field || form[field] ? "top-2 text-[10px] text-[#00D4AA]" : "top-3.5 text-sm text-[#64748B]"
                         }`}>
                           {t(locale, `demo.${field}`)}
                         </label>
@@ -708,15 +724,15 @@ export default function LandingPage() {
                     <div className="relative">
                       <textarea id="demo-message" rows={3} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
                         onFocus={() => setFocused("message")} onBlur={() => setFocused(null)}
-                        className="w-full px-4 pt-6 pb-2 rounded-btn bg-white border border-[#A7F3D0] text-[#022C22] text-sm placeholder-transparent focus:outline-none focus:border-[#00D4AA] focus:shadow-[0_0_0_3px_rgba(0,212,170,0.15)] transition-all duration-200 peer resize-none"
+                        className="w-full px-4 pt-6 pb-2 rounded-btn bg-[#0D1E32] border border-[#00D4AA]/20 text-white text-sm placeholder-transparent focus:outline-none focus:border-[#00D4AA] focus:shadow-[0_0_0_3px_rgba(0,212,170,0.15)] transition-all duration-200 peer resize-none"
                         placeholder={t(locale, "demo.message")} />
                       <label htmlFor="demo-message" className={`absolute start-4 transition-all duration-200 pointer-events-none ${
-                        focused === "message" || form.message ? "top-2 text-[10px] text-[#00D4AA]" : "top-3.5 text-sm text-[#6B7280]"
+                        focused === "message" || form.message ? "top-2 text-[10px] text-[#00D4AA]" : "top-3.5 text-sm text-[#64748B]"
                       }`}>{t(locale, "demo.message")}</label>
                     </div>
 
                     <MagneticButton type="submit" disabled={submitting}
-                      className="w-full py-3 rounded-btn text-sm font-semibold bg-[#00D4AA] text-white hover:bg-[#059669] transition-all duration-200 active:scale-[0.96] disabled:opacity-70 shadow-[0_4px_14px_rgba(0,212,170,0.3)]">
+                      className="w-full py-3 rounded-btn text-sm font-semibold bg-[#00D4AA] text-white hover:bg-[#009B7D] transition-all duration-200 active:scale-[0.96] disabled:opacity-70 shadow-[0_4px_14px_rgba(0,212,170,0.3)]">
                       {submitting ? (
                         <span className="flex items-center justify-center gap-2">
                           <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
@@ -731,8 +747,8 @@ export default function LandingPage() {
                   <svg className="mx-auto mb-4" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <motion.path d="M20 6L9 17L4 12" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5, ease: "easeInOut" }} />
                   </svg>
-                  <h3 className="text-xl font-semibold text-[#022C22] mb-2">{t(locale, "demo.success")}</h3>
-                  <p className="text-sm text-[#065F46]">{t(locale, "demo.success.sub")}</p>
+                  <h3 className="text-xl font-semibold text-white mb-2">{t(locale, "demo.success")}</h3>
+                  <p className="text-sm text-[#E2E8F0]">{t(locale, "demo.success.sub")}</p>
                 </motion.div>
               )}
             </div>
@@ -741,18 +757,18 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-[#A7F3D0]/20 py-10 bg-[#022C22]">
+      <footer className="border-t border-[#00D4AA]/10 py-10 bg-[#020814]">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Logo className="h-6 w-auto" />
-            <span className="text-[11px] text-[#A7F3D0]">{t(locale, "footer.tagline")}</span>
+            <span className="text-[11px] text-[#64748B]">{t(locale, "footer.tagline")}</span>
           </div>
-          <div className="flex items-center gap-6 text-xs text-[#A7F3D0]">
+          <div className="flex items-center gap-6 text-xs text-[#64748B]">
             <a href="#" className="hover:text-white transition-colors">{t(locale, "footer.privacy")}</a>
             <a href="#" className="hover:text-white transition-colors">{t(locale, "footer.tos")}</a>
             <a href="#" className="hover:text-white transition-colors">{t(locale, "footer.contact")}</a>
           </div>
-          <span className="text-xs text-[#A7F3D0]" dangerouslySetInnerHTML={{ __html: t(locale, "footer.made") }} />
+          <span className="text-xs text-[#64748B]" dangerouslySetInnerHTML={{ __html: t(locale, "footer.made") }} />
         </div>
       </footer>
     </div>

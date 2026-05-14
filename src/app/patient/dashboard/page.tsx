@@ -31,7 +31,7 @@ function StepCircle({ done, current }: { done: boolean; current: boolean }) {
     </div>
   );
   return (
-    <div className="w-6 h-6 rounded-full border-2 border-[#A7F3D0]" />
+    <div className="w-6 h-6 rounded-full border-2 border-gray-600" />
   );
 }
 
@@ -43,7 +43,7 @@ function StatusStepper({ currentStatus, steps }: { currentStatus: string; steps:
         <div key={step.key} className="flex items-center flex-1">
           <div className="flex items-center gap-2">
             <StepCircle done={i < currentIdx} current={i === currentIdx} />
-            <span className={`text-[11px] ${i <= currentIdx ? "text-[#00D4AA] font-medium" : "text-gray-400"}`}>
+            <span className={`text-[11px] ${i <= currentIdx ? "text-[#00D4AA] font-medium" : "text-gray-500"}`}>
               {step.label}
             </span>
           </div>
@@ -109,15 +109,15 @@ export default function PatientDashboard() {
     <RoleGuard allowedRole="patient">
       <motion.div variants={container} initial="hidden" animate="show" className="max-w-4xl mx-auto space-y-6">
         <motion.div variants={item} className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-[#022C22]">{t(locale, "patient.dashboard.title")}</h1>
+          <h1 className="text-2xl font-semibold text-white">{t(locale, "patient.dashboard.title")}</h1>
           <div className="flex items-center gap-2">
             {isDev && (
-              <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm">
+              <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm" className="text-white">
                 {t(locale, "patient.seed")}
               </NeoButton>
             )}
             <Link href="/patient/prescription/new">
-              <NeoButton variant="primary" size="md">
+              <NeoButton variant="primary" size="md" className="text-white">
                 {t(locale, "patient.dashboard.new")}
               </NeoButton>
             </Link>
@@ -126,11 +126,11 @@ export default function PatientDashboard() {
 
         {activeDelivery && (
           <motion.div variants={item}>
-            <GlassCard intensity="light" glow="green" hover={false}>
+            <GlassCard intensity="light" glow="green" hover={false} className="bg-[#0A1628]/80">
               <div className="flex items-center gap-4">
                 <span className="w-3 h-3 rounded-full bg-[#00D4AA] animate-pulse shrink-0" />
                 <div>
-                  <p className="text-sm font-semibold text-[#022C22]">{t(locale, "patient.dashboard.deliveries")}</p>
+                  <p className="text-sm font-semibold text-white">{t(locale, "patient.dashboard.deliveries")}</p>
                   <p className="text-xs text-[#00D4AA]">{t(locale, "patient.dashboard.in_transit")}</p>
                 </div>
                 <StatusBadge status={activeDelivery.status} locale={locale} />
@@ -148,19 +148,20 @@ export default function PatientDashboard() {
           <motion.div variants={item} className="space-y-3">
             {data.map((pv) => (
               <motion.div key={pv.prescription_id} whileHover={{ x: 2 }}>
-                <GlassCard intensity="light" glow="green" hover={true}>
+                <GlassCard intensity="light" glow="green" hover={true} className="bg-[#0A1628]/80">
                   <div className="space-y-3">
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="text-sm font-medium text-[#022C22]">
+                        <p className="text-sm font-medium text-white">
                           {pv.medicament || `#${pv.prescription_id.slice(0, 8)}`}
-                          {pv.dosage && <span className="text-xs text-gray-500 ml-2">{pv.dosage}</span>}
+                          {pv.dosage && <span className="text-xs text-gray-400 ml-2">{pv.dosage}</span>}
                         </p>
                         {pv.doctor_name && (
-                          <p className="text-xs text-gray-500 mt-0.5">{t(locale, "prescription.new.doctor_label")}: {pv.doctor_name}</p>
-                        )}
+                          <p className="text-xs text-gray-400 mt-0.5">{t(locale, "prescription.new.doctor_label")}: {pv.doctor_name}</p>
+                        )
+                        }
                         {pv.created_at && (
-                          <p className="text-xs text-gray-400 mt-0.5">{new Date(pv.created_at).toLocaleDateString()}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{new Date(pv.created_at).toLocaleDateString()}</p>
                         )}
                       </div>
                       <StatusBadge status={pv.status} locale={locale} />
@@ -173,15 +174,15 @@ export default function PatientDashboard() {
           </motion.div>
         ) : (
           <motion.div variants={item}>
-            <GlassCard intensity="light" glow="none" hover={false}>
+            <GlassCard intensity="light" glow="none" hover={false} className="bg-[#0A1628]/80">
               <div className="p-8 text-center">
-                <svg className="w-16 h-16 mx-auto mb-4 text-[#A7F3D0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-16 h-16 mx-auto mb-4 text-[#00D4AA]/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <h3 className="text-lg font-medium text-[#022C22] mb-2">{t(locale, "patient.dashboard.empty.title")}</h3>
-                <p className="text-sm text-gray-500 mb-6">{t(locale, "patient.dashboard.empty.desc")}</p>
+                <h3 className="text-lg font-medium text-white mb-2">{t(locale, "patient.dashboard.empty.title")}</h3>
+                <p className="text-sm text-gray-400 mb-6">{t(locale, "patient.dashboard.empty.desc")}</p>
                 <Link href="/patient/prescription/new">
-                  <NeoButton variant="primary" size="md">
+                  <NeoButton variant="primary" size="md" className="text-white">
                     {t(locale, "patient.dashboard.create")}
                   </NeoButton>
                 </Link>
@@ -195,6 +196,7 @@ export default function PatientDashboard() {
             variant="ghost"
             size="sm"
             onClick={() => window.dispatchEvent(new CustomEvent("toast", { detail: { type: "warning", message: t(locale, "patient.toast.report") } }))}
+            className="text-gray-400 hover:text-[#00D4AA]"
           >
             {t(locale, "patient.dashboard.report")}
           </NeoButton>

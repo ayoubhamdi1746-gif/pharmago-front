@@ -85,11 +85,11 @@ export default function DoctorDashboard() {
       <motion.div variants={container} initial="hidden" animate="show" className="max-w-4xl mx-auto space-y-6">
         <motion.div variants={item} className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-[#022C22] mb-1">{t(locale, "doctor.title")}</h1>
-            <p className="text-sm text-gray-500">{t(locale, "doctor.subtitle")}</p>
+            <h1 className="text-2xl font-semibold text-white mb-1">{t(locale, "doctor.title")}</h1>
+            <p className="text-sm text-gray-400">{t(locale, "doctor.subtitle")}</p>
           </div>
           {isDev && (
-            <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm">
+            <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm" className="text-white">
               {t(locale, "doctor.seed")}
             </NeoButton>
           )}
@@ -97,11 +97,11 @@ export default function DoctorDashboard() {
 
         {awaiting.length > 0 && (
           <motion.div variants={item}>
-            <GlassCard intensity="light" glow="none" hover={false} className="!bg-amber-50/80 border-amber-200"><div className="flex items-center gap-3">
-              <svg className="w-5 h-5 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <GlassCard intensity="light" glow="none" hover={false} className="!bg-[#1a1400]/80 border-[#E69E3E]/30"><div className="flex items-center gap-3">
+              <svg className="w-5 h-5 text-[#E69E3E] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
-              <p className="text-sm font-medium text-amber-800">
+              <p className="text-sm font-medium text-[#E69E3E]">
                 {awaiting.length} {t(locale, "doctor.banner_count")}
               </p>
             </div></GlassCard>
@@ -120,29 +120,29 @@ export default function DoctorDashboard() {
                 <h2 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide">{t(locale, "doctor.awaiting")}</h2>
                 <div className="space-y-3">
                   {awaiting.map((c) => (
-                    <GlassCard key={c.id} intensity="light" glow="none" hover={false} className="!bg-white border-2 border-amber-200"><div className="p-1">
+                    <GlassCard key={c.id} intensity="light" glow="none" hover={false} className="!bg-[#0A1628]/80 border-2 border-[#E69E3E]/40"><div className="p-1">
                       <div className="flex items-start justify-between">
                         <div className="space-y-2 flex-1">
                           <div className="flex items-center gap-3">
-                            <span className="text-sm font-semibold text-[#022C22]">{c.medicament || `#${c.prescription_id.slice(0, 8)}`}</span>
-                            {c.dosage && <span className="text-xs text-gray-500">{c.dosage}</span>}
+                            <span className="text-sm font-semibold text-white">{c.medicament || `#${c.prescription_id.slice(0, 8)}`}</span>
+                            {c.dosage && <span className="text-xs text-gray-400">{c.dosage}</span>}
                             <StatusBadge status={c.status} locale={locale} />
                           </div>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-gray-400">
                             {c.doctor_name ? `Dr. ${c.doctor_name}` : `${t(locale, "prescription.new.doctor_label")}: #${c.prescription_id.slice(0, 8)}`} &middot; {t(locale, "doctor.safety_reason")}
                           </p>
                           {c.patient_reference_token && (
-                            <p className="text-xs text-gray-400">Patient: #{c.patient_reference_token.slice(0, 12)}</p>
+                            <p className="text-xs text-gray-500">Patient: #{c.patient_reference_token.slice(0, 12)}</p>
                           )}
                           <div className="flex items-center gap-2 text-xs">
-                            <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span className="text-gray-500">{t(locale, "doctor.expires")}</span>
                             <Countdown expiresAt={c.expires_at} />
                           </div>
                         </div>
-                        <NeoButton onClick={() => setConfirmId(c.prescription_id)} variant="primary" size="md">
+                        <NeoButton onClick={() => setConfirmId(c.prescription_id)} variant="primary" size="md" className="text-white">
                           {t(locale, "doctor.confirm")}
                         </NeoButton>
                       </div>
@@ -154,12 +154,12 @@ export default function DoctorDashboard() {
 
             {signed.length > 0 && (
               <motion.div variants={item}>
-                <h2 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide">{t(locale, "doctor.signed")}</h2>
+                <h2 className="text-sm font-medium text-gray-400 mb-3 uppercase tracking-wide">{t(locale, "doctor.signed")}</h2>
                 <div className="space-y-2">
                   {signed.map((c) => (
-                    <GlassCard key={c.id} intensity="light" glow="green" hover={false}>
+                    <GlassCard key={c.id} intensity="light" glow="green" hover={false} className="bg-[#0A1628]/80">
                       <div className="flex items-center gap-3 opacity-70">
-                        <span className="text-sm text-[#022C22]">{c.medicament || `#${c.prescription_id.slice(0, 8)}`}</span>
+                        <span className="text-sm text-white">{c.medicament || `#${c.prescription_id.slice(0, 8)}`}</span>
                         <StatusBadge status={c.status} locale={locale} />
                       </div>
                     </GlassCard>
@@ -173,9 +173,9 @@ export default function DoctorDashboard() {
                 <h2 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide">{t(locale, "doctor.expired")}</h2>
                 <div className="space-y-2">
                   {expired.map((c) => (
-                    <GlassCard key={c.id} intensity="light" glow="none" hover={false}>
-                      <div className="flex items-center gap-3 opacity-50">
-                        <span className="text-sm text-[#022C22]">{c.medicament || `#${c.prescription_id.slice(0, 8)}`}</span>
+                    <GlassCard key={c.id} intensity="light" glow="none" hover={false} className="bg-[#0A1628]/80">
+                      <div className="flex items-center gap-3 opacity-40">
+                        <span className="text-sm text-gray-300">{c.medicament || `#${c.prescription_id.slice(0, 8)}`}</span>
                         <StatusBadge status={c.status} locale={locale} />
                       </div>
                     </GlassCard>

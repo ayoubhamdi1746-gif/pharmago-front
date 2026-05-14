@@ -17,10 +17,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "PharmaGo — Plateforme de livraison de médicaments en Tunisie",
-    description: "Sécurisez, vérifiez et livrez des ordonnances médicales en toute confiance. La solution N°1 pour les pharmacies tunisiennes.",
-  },
-  other: {
-    "google-fonts": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Arabic:wght@400;500;600&display=swap",
+    description: "Sécurisez, vérifiez et livrez des ordonnances médicales en toute confiance.",
   },
 };
 

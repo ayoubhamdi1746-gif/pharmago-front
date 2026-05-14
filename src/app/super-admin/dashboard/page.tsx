@@ -29,9 +29,9 @@ function StatCard({ label, value, format }: { label: string; value: number; form
   const display = format === "currency" ? `${value.toLocaleString()} TND` : value.toLocaleString();
   return (
     <motion.div variants={item}>
-      <GlassCard intensity="light" glow="green" hover={true}>
-        <p className="text-xs text-[#6B7280] mb-1">{label}</p>
-        <p className="text-4xl font-bold text-[#022C22]">{display}</p>
+      <GlassCard intensity="light" glow="green" hover={true} className="bg-[#0A1628]/80">
+        <p className="text-xs text-gray-400 mb-1">{label}</p>
+        <p className="text-4xl font-bold text-white">{display}</p>
       </GlassCard>
     </motion.div>
   );
@@ -55,8 +55,8 @@ export default function SuperAdminDashboard() {
         className="max-w-5xl mx-auto space-y-6"
       >
         <motion.div variants={item}>
-          <h1 className="text-2xl font-semibold text-[#022C22]">Super Admin — Vue globale</h1>
-          <p className="text-sm text-gray-500">Statistiques de la plateforme</p>
+          <h1 className="text-2xl font-semibold text-white">Super Admin — Vue globale</h1>
+          <p className="text-sm text-gray-400">Statistiques de la plateforme</p>
         </motion.div>
 
         {isLoading ? (

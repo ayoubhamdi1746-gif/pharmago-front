@@ -34,7 +34,7 @@ const item = {
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-soft p-4 transition-all duration-200 hover:border-[#00D4AA] ${className}`}>
+    <div className={`bg-[#0A1628]/80 border border-[#00D4AA]/20 rounded-card shadow-soft p-4 transition-all duration-200 hover:border-[#00D4AA]/30 ${className}`}>
       {children}
     </div>
   );
@@ -88,7 +88,7 @@ export default function AdminPayouts() {
         className="max-w-5xl mx-auto space-y-6"
       >
         <motion.div variants={item} className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-[#022C22]">
+          <h1 className="text-2xl font-semibold text-white">
             {t(locale, "admin.payouts.title")}
           </h1>
           <div className="flex gap-2">
@@ -97,7 +97,7 @@ export default function AdminPayouts() {
               className={`px-3 py-1.5 rounded-btn text-sm font-medium transition-colors duration-200 ${
                 period === "week"
                   ? "bg-[#00D4AA] text-white"
-                  : "bg-white text-gray-600 border border-[#A7F3D0] hover:bg-[#F0FDF9]"
+                  : "bg-[#0D1E32] text-gray-400 border border-[#00D4AA]/20 hover:border-[#00D4AA]/40"
               }`}
             >
               {t(locale, "admin.payouts.this_week")}
@@ -107,7 +107,7 @@ export default function AdminPayouts() {
               className={`px-3 py-1.5 rounded-btn text-sm font-medium transition-colors duration-200 ${
                 period === "all"
                   ? "bg-[#00D4AA] text-white"
-                  : "bg-white text-gray-600 border border-[#A7F3D0] hover:bg-[#F0FDF9]"
+                  : "bg-[#0D1E32] text-gray-400 border border-[#00D4AA]/20 hover:border-[#00D4AA]/40"
               }`}
             >
               {t(locale, "admin.payouts.all_time")}
@@ -117,40 +117,40 @@ export default function AdminPayouts() {
 
         <motion.div variants={item} className="grid grid-cols-3 gap-4">
           <Card>
-            <p className="text-xs text-[#6B7280] mb-1">{t(locale, "admin.payouts.total_week")}</p>
+            <p className="text-xs text-gray-400 mb-1">{t(locale, "admin.payouts.total_week")}</p>
             <p className="text-2xl font-bold text-[#00D4AA]">{totalToPay.toFixed(2)} TND</p>
           </Card>
           <Card>
-            <p className="text-xs text-[#6B7280] mb-1">{t(locale, "admin.payouts.pending_count")}</p>
+            <p className="text-xs text-gray-400 mb-1">{t(locale, "admin.payouts.pending_count")}</p>
             <p className="text-2xl font-bold text-[#E69E3E]">{payouts.filter((p) => p.status === "PENDING").length}</p>
           </Card>
           <Card>
-            <p className="text-xs text-[#6B7280] mb-1">{t(locale, "admin.payouts.paid_count")}</p>
+            <p className="text-xs text-gray-400 mb-1">{t(locale, "admin.payouts.paid_count")}</p>
             <p className="text-2xl font-bold text-[#00C853]">{payouts.filter((p) => p.status === "PAID").length}</p>
           </Card>
         </motion.div>
 
         <motion.div variants={item}>
-          <h2 className="text-lg font-semibold text-[#022C22] mb-3">
+          <h2 className="text-lg font-semibold text-white mb-3">
             {t(locale, "admin.payouts.list_title")}
           </h2>
           {isLoading ? (
             <div className="space-y-2">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-16 bg-gray-100 rounded-card animate-pulse" />
+                <div key={i} className="h-16 bg-[#0A1628]/80 rounded-card animate-pulse" />
               ))}
             </div>
           ) : payouts.length === 0 ? (
             <Card>
-              <p className="text-sm text-gray-500 text-center py-4">{t(locale, "admin.payouts.empty")}</p>
+              <p className="text-sm text-gray-400 text-center py-4">{t(locale, "admin.payouts.empty")}</p>
             </Card>
           ) : (
             <div className="space-y-2">
               {payouts.map((p) => (
-                <Card key={p.id} className="flex items-center justify-between">
+                <Card key={p.id} className="flex items-center justify-between bg-[#0A1628]/80">
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
-                      <p className="text-sm font-mono text-[#022C22]">
+                      <p className="text-sm font-mono text-white">
                         {p.driver_token_hash.slice(0, 16)}...
                       </p>
                       <span

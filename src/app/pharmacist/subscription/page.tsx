@@ -70,7 +70,7 @@ export default function PharmacistSubscriptionPage() {
         animate="visible"
         className="max-w-4xl mx-auto space-y-6"
       >
-        <h1 className="text-2xl font-semibold text-[#022C22] tracking-tight">
+        <h1 className="text-2xl font-semibold text-white tracking-tight">
           {t(locale, "pharmacist.subscription.title")}
         </h1>
 
@@ -82,14 +82,14 @@ export default function PharmacistSubscriptionPage() {
         ) : sub ? (
           <>
             {/* Plan Card */}
-            <motion.div
+<motion.div
               variants={staggerItem}
-              className="bg-white border border-[#A7F3D0] rounded-card shadow-soft p-6"
+              className="bg-[#0A1628]/80 border border-[#00D4AA]/20 rounded-card shadow-soft p-6"
             >
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{t(locale, "pharmacist.subscription.plan")}</p>
-                  <p className="text-2xl font-bold text-[#022C22]">
+                  <p className="text-xs text-gray-400 mb-1">{t(locale, "pharmacist.subscription.plan")}</p>
+                  <p className="text-2xl font-bold text-white">
                     {sub.plan}
                   </p>
                   <p className="text-lg font-semibold text-[#00D4AA] mt-1">
@@ -99,8 +99,8 @@ export default function PharmacistSubscriptionPage() {
                 <span
                   className={`px-3 py-1 text-xs font-medium rounded-full ${
                     sub.is_active
-                      ? "bg-[#F0FDF9] text-[#00D4AA] border border-[#A7F3D0]"
-                      : "bg-red-50 text-red-600 border border-red-200"
+                      ? "bg-[#00D4AA]/10 text-[#00D4AA] border border-[#00D4AA]/30"
+                      : "bg-[#FF4D6D]/10 text-[#FF4D6D] border border-[#FF4D6D]/30"
                   }`}
                 >
                   {sub.is_active
@@ -109,17 +109,16 @@ export default function PharmacistSubscriptionPage() {
                 </span>
               </div>
 
-              {/* Usage Bar */}
               <div className="mb-6">
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-500">{t(locale, "pharmacist.subscription.usage")}</span>
-                  <span className="font-medium text-[#022C22]">
+                  <span className="text-gray-400">{t(locale, "pharmacist.subscription.usage")}</span>
+                  <span className="font-medium text-white">
                     {sub.delivery_count_this_month} / {sub.delivery_limit ?? "∞"}{" "}
                     {t(locale, "pharmacist.subscription.deliveries")}
                   </span>
                 </div>
                 {sub.delivery_limit ? (
-                  <div className="w-full bg-gray-100 rounded-full h-2.5">
+                  <div className="w-full bg-[#0D1E32] rounded-full h-2.5">
                     <div
                       className={`h-2.5 rounded-full transition-all duration-500 ${usageColor}`}
                       style={{ width: `${usagePercent}%` }}
@@ -132,14 +131,14 @@ export default function PharmacistSubscriptionPage() {
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-gray-500">{t(locale, "pharmacist.subscription.renewal")}</p>
-                  <p className="font-medium text-[#022C22]">
+                  <p className="text-gray-400">{t(locale, "pharmacist.subscription.renewal")}</p>
+                  <p className="font-medium text-white">
                     {new Date(sub.expires_at).toLocaleDateString(locale === "ar" ? "ar-TN" : "fr-TN")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500">{t(locale, "pharmacist.subscription.status")}</p>
-                  <p className="font-medium text-[#022C22]">
+                  <p className="text-gray-400">{t(locale, "pharmacist.subscription.status")}</p>
+                  <p className="font-medium text-white">
                     {sub.is_active
                       ? t(locale, "pharmacist.subscription.active")
                       : t(locale, "pharmacist.subscription.inactive")}
@@ -149,10 +148,61 @@ export default function PharmacistSubscriptionPage() {
 
               <button
                 onClick={() => { setSelectedPlan(sub.plan); setShowModal(true); }}
-                className="mt-6 w-full py-2.5 bg-[#022C22] text-white rounded-btn text-sm font-medium hover:bg-[#044C3A] transition-colors"
+                className="mt-6 w-full py-2.5 bg-[#00D4AA] text-white rounded-btn text-sm font-medium hover:bg-[#009B7D] transition-colors"
               >
                 {t(locale, "pharmacist.subscription.change_plan")}
               </button>
+            </motion.div>
+
+            <motion.div
+              variants={staggerItem}
+              className="bg-[#0A1628]/80 border border-[#00D4AA]/20 rounded-card shadow-soft p-6"
+            >
+              <h2 className="text-sm font-semibold text-white mb-4">
+                {t(locale, "pharmacist.subscription.transactions")}
+              </h2>
+              {txns && txns.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-gray-400 border-b border-[#00D4AA]/20">
+                        <th className="pb-2 pr-4">{t(locale, "pharmacist.subscription.provider")}</th>
+                        <th className="pb-2 pr-4">{t(locale, "pharmacist.subscription.amount")}</th>
+                        <th className="pb-2 pr-4">{t(locale, "pharmacist.subscription.transaction_status")}</th>
+                        <th className="pb-2">{t(locale, "pharmacist.subscription.date")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {txns.map((txn) => (
+                        <tr key={txn.id} className="border-b border-[#00D4AA]/10">
+                          <td className="py-3 pr-4 font-medium text-white">{txn.provider}</td>
+                          <td className="py-3 pr-4 text-[#00D4AA]">{txn.amount_tnd.toFixed(2)} TND</td>
+                          <td className="py-3 pr-4">
+                            <span
+                              className={`px-2 py-0.5 text-xs rounded-full ${
+                                txn.status === "COMPLETED"
+                                  ? "bg-[#00D4AA]/10 text-[#00D4AA]"
+                                  : txn.status === "PENDING"
+                                  ? "bg-[#E69E3E]/10 text-[#E69E3E]"
+                                  : "bg-[#FF4D6D]/10 text-[#FF4D6D]"
+                              }`}
+                            >
+                              {t(locale, `status.${txn.status}`)}
+                            </span>
+                          </td>
+                          <td className="py-3 text-gray-400">
+                            {new Date(txn.created_at).toLocaleDateString(locale === "ar" ? "ar-TN" : "fr-TN")}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400 text-center py-4">
+                  {t(locale, "pharmacist.subscription.empty_transactions")}
+                </p>
+              )}
             </motion.div>
 
             {/* Transactions */}
@@ -227,8 +277,8 @@ export default function PharmacistSubscriptionPage() {
                   key={plan}
                   className={`block p-4 border rounded-card cursor-pointer transition-all ${
                     selectedPlan === plan
-                      ? "border-[#00D4AA] bg-[#F0FDF9]"
-                      : "border-gray-200 hover:border-[#A7F3D0]"
+                      ? "border-[#00D4AA] bg-[#00D4AA]/10"
+                      : "border-[#00D4AA]/20 bg-[#0D1E32] hover:border-[#00D4AA]/40"
                   } ${isCurrent ? "opacity-60" : ""}`}
                 >
                   <input
@@ -240,7 +290,7 @@ export default function PharmacistSubscriptionPage() {
                     className="mr-2 accent-[#00D4AA]"
                     disabled={isCurrent}
                   />
-                  <span className="font-medium text-[#022C22]">{plan}</span>
+                  <span className="font-medium text-white">{plan}</span>
                   <span className="float-right text-[#00D4AA] font-semibold">{price} TND/mois</span>
                 </label>
               );
@@ -252,7 +302,7 @@ export default function PharmacistSubscriptionPage() {
                   changePlanMut.mutate({ plan, provider: "KONNECT" });
                 }}
                 disabled={changePlanMut.isPending || selectedPlan === sub?.plan}
-                className="flex-1 py-2.5 bg-[#022C22] text-white rounded-btn text-sm font-medium hover:bg-[#044C3A] transition-colors disabled:opacity-50"
+                className="flex-1 py-2.5 bg-[#0D1E32] text-white rounded-btn text-sm font-medium hover:bg-[#0D1E32]/80 border border-[#00D4AA]/20 transition-colors disabled:opacity-50"
               >
                 {t(locale, "pharmacist.subscription.pay_konnect")}
               </button>

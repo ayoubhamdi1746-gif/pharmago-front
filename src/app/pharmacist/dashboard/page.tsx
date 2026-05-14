@@ -46,14 +46,14 @@ function StatCard({
 }) {
   const count = useCountUp(value);
   return (
-    <GlassCard intensity="light" glow={glow ? "green" : "none"} hover={true} className={glow || ""}>
+    <GlassCard intensity="light" glow={glow ? "green" : "none"} hover={true} className={`bg-[#0A1628]/80 ${glow || ""}`}>
       <div className="flex items-center gap-3 p-1">
         <div className="w-10 h-10 rounded-lg bg-[#00D4AA]/10 flex items-center justify-center text-[#00D4AA]">
           {icon}
         </div>
         <div>
-          <p className="text-2xl font-bold text-[#022C22]">{count}</p>
-          <p className="text-xs text-gray-500">{label}</p>
+          <p className="text-2xl font-bold text-white">{count}</p>
+          <p className="text-xs text-gray-400">{label}</p>
         </div>
       </div>
     </GlassCard>
@@ -244,11 +244,11 @@ export default function PharmacistDashboard() {
         </div>
 
         <motion.div variants={staggerItem} className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-[#022C22] tracking-tight">
+          <h1 className="text-2xl font-semibold text-white tracking-tight">
             {t(locale, "pharmacist.queue.title")}
           </h1>
           {isDev && (
-            <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm">
+            <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm" className="text-white">
               {t(locale, "pharmacist.seed")}
             </NeoButton>
           )}
@@ -287,7 +287,7 @@ export default function PharmacistDashboard() {
                   intensity="light"
                   glow={isHighRisk ? "red" : "green"}
                   hover={true}
-                  className={`border-l-2 ${isHighRisk ? "border-l-[#FF4D6D]" : pv.status === "VERIFIED" ? "border-l-[#00D4AA]" : canVerify ? "border-l-[#E69E3E]" : "border-l-[#A7F3D0]"}`}
+                  className={`bg-[#0A1628]/80 border-l-2 ${isHighRisk ? "border-l-[#FF4D6D]" : pv.status === "VERIFIED" ? "border-l-[#00D4AA]" : canVerify ? "border-l-[#E69E3E]" : "border-l-[#00D4AA]/30"}`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -295,11 +295,11 @@ export default function PharmacistDashboard() {
                         {isHighRisk && (
                           <span className="w-2 h-2 rounded-full bg-[#FF4D6D] animate-pulse shrink-0" />
                         )}
-                        <span className="text-sm font-medium text-[#022C22]">
+                        <span className="text-sm font-medium text-white">
                           {pv.medicament || `#${pv.prescription_id.slice(0, 8)}`}
                         </span>
                         {pv.dosage && (
-                          <span className="text-xs text-gray-500">{pv.dosage}</span>
+                          <span className="text-xs text-gray-400">{pv.dosage}</span>
                         )}
                         <StatusBadge status={pv.status} locale={locale} />
                       </div>
@@ -314,23 +314,23 @@ export default function PharmacistDashboard() {
                         </p>
                       )}
                       {pv.doctor_name && (
-                        <p className="text-xs text-gray-500 mb-0.5">
+                        <p className="text-xs text-gray-400 mb-0.5">
                           {pv.doctor_name}
                           {pv.doctor_phone ? ` · ${pv.doctor_phone}` : ""}
                         </p>
                       )}
                       {pv.pharmacist_license_hash && (
-                        <p className="text-xs text-gray-400 mb-0.5">
+                        <p className="text-xs text-gray-500 mb-0.5">
                           Lic. {pv.pharmacist_license_hash.slice(0, 8)}
                         </p>
                       )}
                       {hasItems && pv.items!.map((it: PrescriptionItemDetail, idx: number) => (
-                        <p key={idx} className="text-xs text-gray-500">
+                        <p key={idx} className="text-xs text-gray-400">
                           {t(locale, "pharmacist.quantity")}: {it.quantity} · {it.dose_mg} mg
                         </p>
                       ))}
                       {pv.created_at && (
-                        <p className="text-xs text-gray-400 mt-0.5">{new Date(pv.created_at).toLocaleDateString()}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{new Date(pv.created_at).toLocaleDateString()}</p>
                       )}
                     </div>
                     <div className="flex gap-2 flex-wrap justify-end">
@@ -373,14 +373,14 @@ export default function PharmacistDashboard() {
             })}
             {filtered.length === 0 && (
               <motion.div variants={staggerItem} className="text-center py-12">
-                <svg className="w-24 h-24 mx-auto mb-4 text-[#A7F3D0]" fill="none" viewBox="0 0 64 64" stroke="currentColor" strokeWidth="1">
+                <svg className="w-24 h-24 mx-auto mb-4 text-[#00D4AA]/30" fill="none" viewBox="0 0 64 64" stroke="currentColor" strokeWidth="1">
                   <rect x="12" y="8" width="40" height="48" rx="4" stroke="currentColor" fill="none" />
                   <path d="M20 18h24M20 26h16M20 34h24M20 42h12" stroke="currentColor" strokeLinecap="round" />
                   <circle cx="48" cy="44" r="8" stroke="currentColor" fill="none" />
                   <path d="M48 40v8M44 44h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
-                <h3 className="text-lg font-medium text-[#022C22] mb-2">{t(locale, "pharmacist.queue.title")}</h3>
-                <p className="text-sm text-gray-500">{t(locale, "pharmacist.queue.empty")}</p>
+                <h3 className="text-lg font-medium text-white mb-2">{t(locale, "pharmacist.queue.title")}</h3>
+                <p className="text-sm text-gray-400">{t(locale, "pharmacist.queue.empty")}</p>
               </motion.div>
             )}
           </motion.div>
@@ -392,26 +392,26 @@ export default function PharmacistDashboard() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-card shadow-xl p-6 w-full max-w-md mx-4 space-y-4"
+            className="bg-[#0A1628]/95 backdrop-blur-xl border border-[#00D4AA]/20 rounded-card shadow-xl p-6 w-full max-w-md mx-4 space-y-4"
           >
-            <h3 className="text-lg font-semibold text-[#022C22]">{t(locale, "pharmacist.assignModal.title")}</h3>
+            <h3 className="text-lg font-semibold text-white">{t(locale, "pharmacist.assignModal.title")}</h3>
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">{t(locale, "pharmacist.assignModal.pickup")}</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t(locale, "pharmacist.assignModal.pickup")}</label>
               <input
                 type="text"
                 value={pickupCoords}
                 onChange={(e) => setPickupCoords(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-[#022C22] text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent"
+                className="w-full px-3 py-2.5 rounded-btn border border-[#00D4AA]/20 bg-[#0D1E32] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent placeholder-gray-500"
                 placeholder="36.8065,10.1815"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">{t(locale, "pharmacist.assignModal.dropoff")}</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">{t(locale, "pharmacist.assignModal.dropoff")}</label>
               <input
                 type="text"
                 value={encryptedDropoff}
                 onChange={(e) => setEncryptedDropoff(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-[#022C22] text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent"
+                className="w-full px-3 py-2.5 rounded-btn border border-[#00D4AA]/20 bg-[#0D1E32] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent placeholder-gray-500"
                 placeholder={t(locale, "pharmacist.assignModal.dropoff_placeholder")}
               />
             </div>

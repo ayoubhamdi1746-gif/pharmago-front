@@ -9,9 +9,9 @@ import { t, type Locale } from "@/lib/i18n";
 const plans = ["STARTER", "PRO", "ENTERPRISE"] as const;
 
 const planColors: Record<string, string> = {
-  STARTER: "from-[#00D4AA]/20 to-[#00D4AA]/5 border-[#00D4AA]",
-  PRO: "from-[#00C853]/20 to-[#00C853]/5 border-[#00C853]",
-  ENTERPRISE: "from-[#022C22]/20 to-[#022C22]/5 border-[#022C22]",
+  STARTER: "from-[#00D4AA]/20 to-[#00D4AA]/5 border-[#00D4AA]/40",
+  PRO: "from-[#00C853]/20 to-[#00C853]/5 border-[#00C853]/40",
+  ENTERPRISE: "from-[#00D4AA]/10 to-[#00D4AA]/5 border-[#00D4AA]/30",
 };
 
 export default function OnboardingPage() {
@@ -55,8 +55,8 @@ export default function OnboardingPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <h1 className="text-3xl font-bold text-[#022C22] mb-2">{t(locale, "onboarding.title")}</h1>
-          <p className="text-gray-500">{t(locale, "onboarding.subtitle")}</p>
+          <h1 className="text-3xl font-bold text-white mb-2">{t(locale, "onboarding.title")}</h1>
+          <p className="text-gray-400">{t(locale, "onboarding.subtitle")}</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -69,18 +69,18 @@ export default function OnboardingPage() {
               className={`bg-gradient-to-b ${planColors[plan]} border-2 rounded-card shadow-soft p-6 flex flex-col`}
             >
               <div className="mb-4">
-                <h2 className="text-xl font-bold text-[#022C22]">
+                <h2 className="text-xl font-bold text-white">
                   {t(locale, `onboarding.${plan.toLowerCase()}.label`)}
                 </h2>
-                <p className="text-3xl font-bold text-[#022C22] mt-2">
+                <p className="text-3xl font-bold text-[#00D4AA] mt-2">
                   {t(locale, `onboarding.${plan.toLowerCase()}.price`)}
                 </p>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-400 mt-1">
                   {t(locale, `onboarding.${plan.toLowerCase()}.limit`)}
                 </p>
               </div>
 
-              <ul className="space-y-2 mb-6 text-sm text-gray-600">
+              <ul className="space-y-2 mb-6 text-sm text-gray-300">
                 {[
                   t(locale, `onboarding.${plan.toLowerCase()}.feat1`),
                   t(locale, `onboarding.${plan.toLowerCase()}.feat2`),
@@ -106,7 +106,7 @@ export default function OnboardingPage() {
                 <button
                   onClick={() => handlePay(plan, "FLOUCI")}
                   disabled={loading !== null}
-                  className="w-full py-3 rounded-btn text-sm font-medium text-[#022C22] bg-white border-2 border-[#A7F3D0] hover:border-[#00D4AA] transition-colors duration-200 disabled:opacity-50"
+                  className="w-full py-3 rounded-btn text-sm font-medium text-white bg-[#0D1E32] border-2 border-[#00D4AA]/30 hover:border-[#00D4AA]/60 transition-colors duration-200 disabled:opacity-50"
                 >
                   {loading === `${plan}-FLOUCI` ? t(locale, "onboarding.processing") : t(locale, "onboarding.pay_flouci")}
                 </button>
@@ -119,25 +119,25 @@ export default function OnboardingPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-soft p-6 max-w-lg mx-auto space-y-4"
+          className="bg-[#0A1628]/80 border border-[#00D4AA]/20 rounded-card shadow-soft p-6 max-w-lg mx-auto space-y-4"
         >
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">{t(locale, "onboarding.phone")}</label>
+            <label className="block text-sm font-medium text-gray-400 mb-1">{t(locale, "onboarding.phone")}</label>
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder={t(locale, "onboarding.phone_placeholder")}
-              className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-[#022C22] text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent"
+              className="w-full px-3 py-2.5 rounded-btn border border-[#00D4AA]/20 bg-[#0D1E32] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent placeholder-gray-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">{t(locale, "admin.subscription.name_label")}</label>
+            <label className="block text-sm font-medium text-gray-400 mb-1">{t(locale, "admin.subscription.name_label")}</label>
             <input
               type="text"
               value={pharmacyName}
               onChange={(e) => setPharmacyName(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-[#022C22] text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent"
+              className="w-full px-3 py-2.5 rounded-btn border border-[#00D4AA]/20 bg-[#0D1E32] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00D4AA] focus:border-transparent placeholder-gray-500"
             />
           </div>
         </motion.div>

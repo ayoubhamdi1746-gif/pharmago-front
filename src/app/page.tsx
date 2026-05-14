@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
-import Image from "next/image";
 import { staggerContainer, staggerItem } from "@/lib/motion";
 import MagneticButton from "@/components/MagneticButton";
 import { t, type Locale } from "@/lib/i18n";
+import Logo from "@/components/Logo";
 
 function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const ref = useRef(null);
@@ -281,7 +281,7 @@ export default function LandingPage() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Image src="/logo.svg" alt="PharmaGo" width={110} height={33} className="h-8 w-auto" priority />
+          <Logo className="h-8 w-auto" />
           <div className="hidden md:flex items-center gap-4">
             <LocaleToggle locale={locale} onToggle={() => setLocale(isRtl ? "fr" : "ar")} />
             <a href="/register/pharmacy" className="px-4 py-2 rounded-btn text-sm font-medium text-[#00D4AA] border border-[#A7F3D0] hover:border-[#00D4AA] hover:bg-[#F0FDF9] transition-all duration-200">
@@ -690,7 +690,7 @@ export default function LandingPage() {
       <footer className="border-t border-[#A7F3D0]/20 py-10 bg-[#022C22]">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Image src="/logo.svg" alt="PharmaGo" width={100} height={30} className="h-6 w-auto" />
+            <Logo className="h-6 w-auto" />
             <span className="text-[11px] text-[#A7F3D0]">{t(locale, "footer.tagline")}</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-[#A7F3D0]">

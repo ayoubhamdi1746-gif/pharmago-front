@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import type { Role } from "@/lib/types";
 import { staggerContainer, staggerItem } from "@/lib/motion";
 import { t, type Locale } from "@/lib/i18n";
+import Logo from "@/components/Logo";
 
 const navKeys: Record<Role, { href: string; key: string }[]> = {
   patient: [
@@ -70,7 +70,7 @@ export default function Sidebar({ role }: { role: Role }) {
   return (
     <aside className="w-64 bg-white min-h-screen p-4 hidden md:flex flex-col border-r border-[#A7F3D0]">
       <div className="flex items-center gap-3 mb-8 px-3">
-        <Image src="/logo.svg" alt="PharmaGo" width={100} height={40} className="h-7 w-auto" priority />
+        <Logo className="h-7 w-auto" />
       </div>
 
       <motion.div

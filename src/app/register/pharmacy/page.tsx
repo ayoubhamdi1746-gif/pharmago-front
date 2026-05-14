@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
+import Logo from "@/components/Logo";
 
 const plans = [
   { id: "STARTER", price: "200 TND/mois", limit: "50 livraisons/mois", features: ["50 livraisons sécurisées/mois", "Vérification pharmacien incluse", "Support email prioritaire"] },
@@ -64,7 +64,7 @@ export default function RegisterPharmacyPage() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-lg">
         <div className="bg-white border border-[#A7F3D0] rounded-card shadow-soft p-8">
           <div className="flex justify-center mb-6">
-            <a href="/"><Image src="/logo.svg" alt="PharmaGo" width={140} height={42} className="h-10 w-auto" /></a>
+            <a href="/"><Logo className="h-10 w-auto" /></a>
           </div>
 
           {/* Steps indicator */}

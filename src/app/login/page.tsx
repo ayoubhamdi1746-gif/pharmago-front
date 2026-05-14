@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { getRedirectPath } from "@/lib/redirect";
 import MagneticButton from "@/components/MagneticButton";
+import Logo from "@/components/Logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -74,7 +74,7 @@ export default function LoginPage() {
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.1 }}
             >
-              <Image src="/logo.svg" alt="PharmaGo" width={160} height={48} className="h-12 w-auto" priority />
+              <Logo className="h-12 w-auto" />
             </motion.div>
           </div>
 

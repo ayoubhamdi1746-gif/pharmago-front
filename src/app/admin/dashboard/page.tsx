@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from "recharts";
+import Link from "next/link";
 import RoleGuard from "@/components/RoleGuard";
 import Skeleton from "@/components/Skeleton";
 import Modal from "@/components/Modal";
@@ -11,7 +12,8 @@ import GlassCard from "@/components/ui/GlassCard";
 import NeoButton from "@/components/ui/NeoButton";
 import api from "@/lib/api";
 import type { ApiResponse, VettedDriver, DashboardStats, RevenueData, Subscription as SubType } from "@/lib/types";
-import { t, type Locale } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
+import { useLocale } from "@/lib/useLocale";
 
 const container = {
   hidden: {},
@@ -41,7 +43,7 @@ function useCountUp(target: number, duration = 1200) {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      ref.current = Math.round(eased * target);
+      ref.current = Math.round(eased * target * 100) / 100;
       setValue(ref.current);
       if (progress < 1) requestAnimationFrame(step);
     };
@@ -95,6 +97,7 @@ const isDev = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
+  const { locale } = useLocale();
   const [showRegister, setShowRegister] = useState(false);
   const [showSubForm, setShowSubForm] = useState(false);
   const [subPharmacyName, setSubPharmacyName] = useState("");
@@ -102,19 +105,7 @@ export default function AdminDashboard() {
   const [subPlan, setSubPlan] = useState("STARTER");
   const [driverId, setDriverId] = useState("");
   const [suspendHash, setSuspendHash] = useState<string | null>(null);
-  const [locale, setLocale] = useState<Locale>("fr");
   const [seeding, setSeeding] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("lang") as Locale | null;
-    if (saved) setLocale(saved);
-    const handler = () => {
-      const updated = localStorage.getItem("lang") as Locale | null;
-      if (updated) setLocale(updated);
-    };
-    window.addEventListener("langchange", handler);
-    return () => window.removeEventListener("langchange", handler);
-  }, []);
 
   const { data: stats } = useQuery({
     queryKey: ["admin-stats"],
@@ -202,7 +193,7 @@ export default function AdminDashboard() {
       );
     } catch {
       window.dispatchEvent(
-        new CustomEvent("toast", { detail: { type: "error", message: "Suspension failed" } })
+        new CustomEvent("toast", { detail: { type: "error", message: t(locale, "admin.billing.suspension_error") } })
       );
     } finally {
       setSuspendHash(null);
@@ -263,7 +254,7 @@ export default function AdminDashboard() {
         {/* Platform revenue banner — prominent at top */}
         {revenue && (
           <motion.div variants={item} className="bg-gradient-to-r from-[#00D4AA] to-[#009B7D] rounded-card p-6 text-white shadow-[0_8px_30px_rgba(0,212,170,0.3)]">
-            <p className="text-sm opacity-80 mb-1">Revenus plateforme ce mois</p>
+            <p className="text-sm opacity-80 mb-1">{t(locale, "admin.billing.banner")}</p>
             <RevenueCount target={(revenue.mrr_tnd ?? 0) + (revenue.commissions_tnd ?? 0)} />
             <div className="flex gap-6 mt-2 text-sm opacity-80">
               <span>MRR: {revenue.mrr_tnd ?? 0} TND</span>
@@ -288,11 +279,11 @@ export default function AdminDashboard() {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
             {t(locale, "admin.billing.new")}
           </NeoButton>
-          <a href="/admin/payouts"
+          <Link href="/admin/payouts"
             className="flex items-center gap-2 px-4 py-3 rounded-btn text-sm font-medium text-[#022C22] bg-[#F0FDF9] border border-[#A7F3D0] hover:border-[#00D4AA] transition-all duration-200">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             {t(locale, "admin.payouts.title")}
-          </a>
+          </Link>
         </motion.div>
 
         <motion.div variants={item}>

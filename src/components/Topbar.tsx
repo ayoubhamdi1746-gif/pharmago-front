@@ -4,28 +4,19 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import type { Role } from "@/lib/types";
-import { t, type Locale } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
+import { useLocale } from "@/lib/useLocale";
 
 export default function Topbar({ role }: { role: Role }) {
   const router = useRouter();
+  const { locale, toggleLocale } = useLocale();
   const [scrolled, setScrolled] = useState(false);
-  const [locale, setLocale] = useState<Locale>("fr");
 
   useEffect(() => {
-    const savedLocale = localStorage.getItem("lang") as Locale | null;
-    if (savedLocale) setLocale(savedLocale);
-
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    document.documentElement.lang = locale;
-    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
-    localStorage.setItem("lang", locale);
-    window.dispatchEvent(new CustomEvent("langchange", { detail: locale }));
-  }, [locale]);
 
   const handleLogout = async () => {
     const { clearTokens } = await import("@/lib/auth");
@@ -47,7 +38,7 @@ export default function Topbar({ role }: { role: Role }) {
 
       <div className="flex items-center gap-2">
         <button
-          onClick={() => setLocale(locale === "fr" ? "ar" : "fr")}
+          onClick={toggleLocale}
           className="relative w-14 h-7 rounded-full bg-[#F0FDF9] border border-[#A7F3D0] transition-all duration-200 hover:border-[#00D4AA]"
         >
           <motion.span

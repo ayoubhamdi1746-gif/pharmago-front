@@ -57,10 +57,8 @@ export default function StatusBadge({ status, locale = "fr" }: { status: string;
         className={`w-1.5 h-1.5 rounded-full ${
           cfg.pulse
             ? "bg-warning-400 animate-pulse"
-            : status === "HIGH_RISK_PENDING"
+            : status === "HIGH_RISK_PENDING" || status === "EXPIRED"
             ? "bg-danger-400"
-            : status === "VERIFIED" || status === "SIGNED" || status === "delivered"
-            ? "bg-primary-400"
             : "bg-primary-400"
         }`}
       />

@@ -91,7 +91,6 @@ export default function PharmacistInventory() {
         });
       } else {
         await api.post("/pharmacist/inventory", {
-          pharmacy_id: "00000000-0000-0000-0000-000000000001",
           medication_name: name,
           dosage,
           stock_quantity: parseInt(stock) || 0,

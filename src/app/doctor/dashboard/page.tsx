@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import RoleGuard from "@/components/RoleGuard";
@@ -10,15 +10,17 @@ import Modal from "@/components/Modal";
 import GlassCard from "@/components/ui/GlassCard";
 import NeoButton from "@/components/ui/NeoButton";
 import api from "@/lib/api";
+import { useLocale } from "@/lib/useLocale";
+import { t } from "@/lib/i18n";
 import type { ApiResponse, DoctorConfirmationRequest } from "@/lib/types";
-import { t, type Locale } from "@/lib/i18n";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.15, ease: "easeInOut" as const } } };
 
 const isDev = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
-function Countdown({ expiresAt, locale }: { expiresAt: string; locale: Locale }) {
+function Countdown({ expiresAt }: { expiresAt: string }) {
+  const { locale } = useLocale();
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 1000);
@@ -36,20 +38,9 @@ function Countdown({ expiresAt, locale }: { expiresAt: string; locale: Locale })
 
 export default function DoctorDashboard() {
   const queryClient = useQueryClient();
+  const { locale } = useLocale();
   const [confirmId, setConfirmId] = useState<string | null>(null);
-  const [locale, setLocale] = useState<Locale>("fr");
   const [seeding, setSeeding] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("lang") as Locale | null;
-    if (saved) setLocale(saved);
-    const handler = () => {
-      const updated = localStorage.getItem("lang") as Locale | null;
-      if (updated) setLocale(updated);
-    };
-    window.addEventListener("langchange", handler);
-    return () => window.removeEventListener("langchange", handler);
-  }, []);
 
   const { data, isLoading } = useQuery({
     queryKey: ["doctor-confirmations"],
@@ -148,7 +139,7 @@ export default function DoctorDashboard() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span className="text-gray-500">{t(locale, "doctor.expires")}</span>
-                            <Countdown expiresAt={c.expires_at} locale={locale} />
+                            <Countdown expiresAt={c.expires_at} />
                           </div>
                         </div>
                         <NeoButton onClick={() => setConfirmId(c.prescription_id)} variant="primary" size="md">

@@ -10,18 +10,12 @@ import Skeleton from "@/components/Skeleton";
 import GlassCard from "@/components/ui/GlassCard";
 import NeoButton from "@/components/ui/NeoButton";
 import api from "@/lib/api";
+import { useLocale } from "@/lib/useLocale";
+import { t } from "@/lib/i18n";
 import type { ApiResponse, PrescriptionVerification } from "@/lib/types";
-import { t, type Locale } from "@/lib/i18n";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.15, ease: "easeInOut" as const } } };
-
-const statusSteps = [
-  { key: "PENDING", label: "Soumise" },
-  { key: "HIGH_RISK_PENDING", label: "Vérification" },
-  { key: "VERIFIED", label: "Prête" },
-  { key: "DISPENSED", label: "Livrée" },
-];
 
 function StepCircle({ done, current }: { done: boolean; current: boolean }) {
   if (done) return (
@@ -32,38 +26,32 @@ function StepCircle({ done, current }: { done: boolean; current: boolean }) {
     </div>
   );
   if (current) return (
-    <div className="w-6 h-6 rounded-full bg-[#00D4AA] flex items-center justify-center shadow-[0_0_0_4px_rgba(0,212,170,0.2)]">
-      <div className="w-2.5 h-2.5 rounded-full bg-white" />
+    <div className="w-6 h-6 rounded-full border-2 border-[#00D4AA] flex items-center justify-center">
+      <div className="w-2.5 h-2.5 rounded-full bg-[#00D4AA]" />
     </div>
   );
   return (
-    <div className="w-6 h-6 rounded-full border-2 border-gray-300 bg-white flex items-center justify-center">
-      <div className="w-2 h-2 rounded-full bg-gray-300" />
-    </div>
+    <div className="w-6 h-6 rounded-full border-2 border-[#A7F3D0]" />
   );
 }
 
-function StatusStepper({ currentStatus }: { currentStatus: string }) {
-  const currentIdx = currentStatus === "HIGH_RISK_PENDING" ? 1 : statusSteps.findIndex((s) => s.key === currentStatus);
+function StatusStepper({ currentStatus, steps }: { currentStatus: string; steps: { key: string; label: string }[] }) {
+  const currentIdx = steps.findIndex((s) => s.key === currentStatus);
   return (
-    <div className="flex items-center">
-      {statusSteps.map((step, idx) => {
-        const isDone = idx < currentIdx;
-        const isCurrent = idx === currentIdx;
-        return (
-          <div key={step.key} className="flex items-center">
-            <div className="flex flex-col items-center">
-              <StepCircle done={isDone} current={isCurrent} />
-              <span className={`text-[10px] mt-1 font-medium ${isDone || isCurrent ? "text-[#00D4AA]" : "text-gray-400"}`}>
-                {step.label}
-              </span>
-            </div>
-            {idx < statusSteps.length - 1 && (
-              <div className={`w-6 sm:w-10 h-0.5 mx-1 sm:mx-2 -mt-5 ${isDone ? "bg-[#00D4AA]" : "bg-gray-200"}`} />
-            )}
+    <div className="flex items-center gap-0">
+      {steps.map((step, i) => (
+        <div key={step.key} className="flex items-center flex-1">
+          <div className="flex items-center gap-2">
+            <StepCircle done={i < currentIdx} current={i === currentIdx} />
+            <span className={`text-[11px] ${i <= currentIdx ? "text-[#00D4AA] font-medium" : "text-gray-400"}`}>
+              {step.label}
+            </span>
           </div>
-        );
-      })}
+          {i < steps.length - 1 && (
+            <div className={`flex-1 h-px mx-2 ${i < currentIdx ? "bg-[#00D4AA]" : "bg-[#A7F3D0]"}`} />
+          )}
+        </div>
+      ))}
     </div>
   );
 }
@@ -72,19 +60,15 @@ const isDev = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
 export default function PatientDashboard() {
   const queryClient = useQueryClient();
-  const [locale, setLocale] = useState<Locale>("fr");
+  const { locale } = useLocale();
   const [seeding, setSeeding] = useState(false);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("lang") as Locale | null;
-    if (saved) setLocale(saved);
-    const handler = () => {
-      const updated = localStorage.getItem("lang") as Locale | null;
-      if (updated) setLocale(updated);
-    };
-    window.addEventListener("langchange", handler);
-    return () => window.removeEventListener("langchange", handler);
-  }, []);
+  const statusSteps = [
+    { key: "PENDING", label: t(locale, "patient.stepper.submitted") },
+    { key: "HIGH_RISK_PENDING", label: t(locale, "patient.stepper.verification") },
+    { key: "VERIFIED", label: t(locale, "patient.stepper.ready") },
+    { key: "DISPENSED", label: t(locale, "patient.stepper.delivered") },
+  ];
 
   const { data, isLoading } = useQuery({
     queryKey: ["patient-prescriptions"],
@@ -97,7 +81,7 @@ export default function PatientDashboard() {
   const { data: deliveries } = useQuery({
     queryKey: ["my-deliveries"],
     queryFn: async () => {
-      const res = await api.get<ApiResponse<{ deliveries: { ticket_id: string; status: string }[] }>>("/my/deliveries");
+      const res = await api.get<ApiResponse<{ deliveries: { ticket_id: string; status: string }[] }>>("/patient/my/deliveries");
       return res.data.data?.deliveries || [];
     },
   });
@@ -119,7 +103,7 @@ export default function PatientDashboard() {
     }
   };
 
-  const activeDelivery = (deliveries || []).find((d) => d.status !== "delivered");
+  const activeDelivery = (deliveries || []).find((d) => d.status === "in_transit");
 
   return (
     <RoleGuard allowedRole="patient">
@@ -181,7 +165,7 @@ export default function PatientDashboard() {
                       </div>
                       <StatusBadge status={pv.status} locale={locale} />
                     </div>
-                    <StatusStepper currentStatus={pv.status} />
+                    <StatusStepper currentStatus={pv.status} steps={statusSteps} />
                   </div>
                 </GlassCard>
               </motion.div>

@@ -40,12 +40,12 @@ export default function PharmacistSubscriptionPage() {
   });
 
   const changePlanMut = useMutation({
-    mutationFn: async (plan: string) => {
+    mutationFn: async (params: { plan: string; provider: string }) => {
       const res = await api.post<ApiResponse<{ payment_url: string }>>("/billing/subscribe", {
         pharmacy_name: sub?.pharmacy_name,
-        plan,
+        plan: params.plan,
         phone: "",
-        payment_provider: selectedPlan === "KONNECT" ? "KONNECT" : "FLOUCI",
+        payment_provider: params.provider,
       });
       return res.data.data;
     },
@@ -248,8 +248,8 @@ export default function PharmacistSubscriptionPage() {
             <div className="flex gap-3 pt-2">
               <button
                 onClick={() => {
-                  setSelectedPlan("KONNECT");
-                  changePlanMut.mutate(selectedPlan);
+                  const plan = selectedPlan;
+                  changePlanMut.mutate({ plan, provider: "KONNECT" });
                 }}
                 disabled={changePlanMut.isPending || selectedPlan === sub?.plan}
                 className="flex-1 py-2.5 bg-[#022C22] text-white rounded-btn text-sm font-medium hover:bg-[#044C3A] transition-colors disabled:opacity-50"
@@ -258,8 +258,8 @@ export default function PharmacistSubscriptionPage() {
               </button>
               <button
                 onClick={() => {
-                  setSelectedPlan("FLOUCI");
-                  changePlanMut.mutate(selectedPlan);
+                  const plan = selectedPlan;
+                  changePlanMut.mutate({ plan, provider: "FLOUCI" });
                 }}
                 disabled={changePlanMut.isPending || selectedPlan === sub?.plan}
                 className="flex-1 py-2.5 bg-[#00D4AA] text-white rounded-btn text-sm font-medium hover:bg-[#00BFA0] transition-colors disabled:opacity-50"

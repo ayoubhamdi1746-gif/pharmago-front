@@ -617,6 +617,60 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* PRICING */}
+      <section id="pricing" className="relative py-24 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <Reveal>
+            <div className="text-center mb-16">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary-500">{t(locale, "section.tarifs")}</span>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-[#022C22]">{t(locale, "section.tarifs.title")}</h2>
+            </div>
+          </Reveal>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { plan: "starter", price: 200, popular: false },
+              { plan: "pro", price: 450, popular: true },
+              { plan: "enterprise", price: 900, popular: false },
+            ].map((tier, i) => (
+              <Reveal key={tier.plan} delay={i * 0.1}>
+                <div
+                  className={`relative bg-[#F0FDF9] border rounded-card p-6 transition-all duration-300 ${
+                    tier.popular
+                      ? "border-primary-400 shadow-[0_8px_30px_rgba(0,212,170,0.2)] scale-105"
+                      : "border-[#A7F3D0] shadow-[0_4px_20px_rgba(0,212,170,0.1)] hover:border-primary-300 hover:shadow-[0_8px_30px_rgba(0,212,170,0.15)]"
+                  }`}
+                >
+                  {tier.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="bg-primary-500 text-white text-[10px] font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                        {t(locale, "pricing.popular")}
+                      </span>
+                    </div>
+                  )}
+                  <div className="text-center mb-6">
+                    <h3 className="text-lg font-semibold text-[#022C22] mb-2">{t(locale, `pricing.${tier.plan}.title`)}</h3>
+                    <div className="flex items-baseline justify-center gap-1">
+                      <span className="text-4xl font-bold text-[#022C22]">{tier.price}</span>
+                      <span className="text-sm text-[#6B7280]">TND</span>
+                      <span className="text-xs text-[#6B7280]">/{t(locale, "pricing.period")}</span>
+                    </div>
+                  </div>
+                  <ul className="space-y-3 mb-6">
+                    {(tier.plan === "starter" ? [1, 2, 3] : tier.plan === "pro" ? [1, 2, 3, 4] : [1, 2, 3, 4, 5]).map((n) => (
+                      <li key={n} className="flex items-center gap-2 text-sm text-[#065F46]">
+                        <span className="w-1 h-1 rounded-full bg-primary-500" />
+                        {t(locale, `pricing.${tier.plan}.feature${n}`)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* DEMO REQUEST */}
       <section id="demo-form" className="relative py-24 bg-[#F0FDF9]">
         <div className="max-w-lg mx-auto px-6">

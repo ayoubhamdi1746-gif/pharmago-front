@@ -1,36 +1,50 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import type { Role } from "@/lib/types";
 import { staggerContainer, staggerItem } from "@/lib/motion";
-import { t, type Locale } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
+import { useLocale } from "@/lib/useLocale";
 import Logo from "@/components/Logo";
+import {
+  LayoutDashboard,
+  Shield,
+  Users,
+  Building2,
+  CreditCard,
+  Pill,
+  Truck,
+  Stethoscope,
+  PackagePlus,
+  DollarSign,
+  ClipboardList,
+} from "lucide-react";
 
-const navKeys: Record<Role, { href: string; key: string }[]> = {
+const navKeys: Record<Role, { href: string; key: string; icon: React.ComponentType<{ className?: string }> }[]> = {
   patient: [
-    { href: "/patient/dashboard", key: "sidebar.dashboard" },
-    { href: "/patient/prescription/new", key: "sidebar.new_prescription" },
+    { href: "/patient/dashboard", key: "sidebar.dashboard", icon: LayoutDashboard },
+    { href: "/patient/prescription/new", key: "sidebar.new_prescription", icon: PackagePlus },
   ],
   pharmacist: [
-    { href: "/pharmacist/dashboard", key: "sidebar.queue" },
-    { href: "/pharmacist/inventory", key: "sidebar.inventory" },
-    { href: "/pharmacist/revenue", key: "sidebar.revenue" },
-    { href: "/pharmacist/subscription", key: "sidebar.subscription" },
+    { href: "/pharmacist/dashboard", key: "sidebar.queue", icon: ClipboardList },
+    { href: "/pharmacist/inventory", key: "sidebar.inventory", icon: Pill },
+    { href: "/pharmacist/revenue", key: "sidebar.revenue", icon: DollarSign },
+    { href: "/pharmacist/subscription", key: "sidebar.subscription", icon: CreditCard },
   ],
   doctor: [
-    { href: "/doctor/dashboard", key: "sidebar.confirmations" },
+    { href: "/doctor/dashboard", key: "sidebar.confirmations", icon: Stethoscope },
   ],
   driver: [
-    { href: "/driver/dashboard", key: "sidebar.deliveries" },
+    { href: "/driver/dashboard", key: "sidebar.deliveries", icon: Truck },
   ],
   admin: [
-    { href: "/admin/dashboard", key: "sidebar.admin_panel" },
-    { href: "/admin/onboarding", key: "sidebar.onboarding" },
-    { href: "/admin/pharmacies", key: "sidebar.pharmacies" },
-    { href: "/admin/payouts", key: "sidebar.payouts" },
+    { href: "/admin/dashboard", key: "sidebar.admin_panel", icon: LayoutDashboard },
+    { href: "/admin/onboarding", key: "sidebar.onboarding", icon: Users },
+    { href: "/admin/pharmacies", key: "sidebar.pharmacies", icon: Building2 },
+    { href: "/admin/payouts", key: "sidebar.payouts", icon: DollarSign },
   ],
   super_admin: [
     { href: "/super-admin/dashboard", key: "sidebar.super_admin.overview" },
@@ -54,18 +68,7 @@ export default function Sidebar({ role }: { role: Role }) {
   const pathname = usePathname();
   const router = useRouter();
   const items = navKeys[role] || [];
-  const [locale, setLocale] = useState<Locale>("fr");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("lang") as Locale | null;
-    if (saved) setLocale(saved);
-    const handler = () => {
-      const updated = localStorage.getItem("lang") as Locale | null;
-      if (updated) setLocale(updated);
-    };
-    window.addEventListener("langchange", handler);
-    return () => window.removeEventListener("langchange", handler);
-  }, []);
+  const { locale } = useLocale();
 
   const colors = roleColors[role];
 
@@ -100,16 +103,18 @@ export default function Sidebar({ role }: { role: Role }) {
       >
         {items.map((item) => {
           const active = pathname === item.href;
+          const Icon = item.icon;
           return (
             <motion.div key={item.href} variants={staggerItem}>
               <Link href={item.href}>
                 <div
-                  className={`relative px-3 py-2.5 rounded-btn text-sm font-medium transition-all duration-200 ${
+                  className={`relative px-3 py-2.5 rounded-btn text-sm font-medium transition-all duration-200 flex items-center gap-3 ${
                     active
                       ? "text-[#00D4AA] bg-[#F0FDF9] border-l-[3px] border-[#00D4AA]"
                       : "text-gray-500 hover:text-[#022C22] hover:bg-[#F0FDF9] border-l-[3px] border-transparent"
                   }`}
                 >
+                  <Icon className={`w-4 h-4 ${active ? "text-[#00D4AA]" : "text-gray-400"}`} />
                   {t(locale, item.key)}
                 </div>
               </Link>

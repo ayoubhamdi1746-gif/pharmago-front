@@ -9,8 +9,9 @@ import Skeleton from "@/components/Skeleton";
 import GlassCard from "@/components/ui/GlassCard";
 import NeoButton from "@/components/ui/NeoButton";
 import api from "@/lib/api";
+import { useLocale } from "@/lib/useLocale";
+import { t } from "@/lib/i18n";
 import type { ApiResponse, DeliveryTicket } from "@/lib/types";
-import { t, type Locale } from "@/lib/i18n";
 
 const container = {
   hidden: {},
@@ -25,13 +26,14 @@ const item = {
 const isDev = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
 function CountdownTimer({ expiresAt }: { expiresAt: string }) {
+  const { locale } = useLocale();
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(interval);
   }, []);
   const diff = new Date(expiresAt).getTime() - now;
-  if (diff <= 0) return <span className="text-[#FF4D6D] font-mono">Expiré</span>;
+  if (diff <= 0) return <span className="text-[#FF4D6D] font-mono">{t(locale, "driver.expired_label")}</span>;
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
   const s = Math.floor((diff % 60000) / 1000);
@@ -76,20 +78,9 @@ function OtpInput({ value, onChange }: { value: string; onChange: (v: string) =>
 
 export default function DriverDashboard() {
   const queryClient = useQueryClient();
+  const { locale } = useLocale();
   const [otpInputs, setOtpInputs] = useState<Record<string, string>>({});
-  const [locale, setLocale] = useState<Locale>("fr");
   const [seeding, setSeeding] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("lang") as Locale | null;
-    if (saved) setLocale(saved);
-    const handler = () => {
-      const updated = localStorage.getItem("lang") as Locale | null;
-      if (updated) setLocale(updated);
-    };
-    window.addEventListener("langchange", handler);
-    return () => window.removeEventListener("langchange", handler);
-  }, []);
 
   const { data, isLoading } = useQuery({
     queryKey: ["driver-tickets"],

@@ -66,6 +66,7 @@ export default function NewPrescriptionPage() {
         doctor_name: doctorName || undefined,
         doctor_phone: doctorPhone || undefined,
         doctor_email: doctorEmail || undefined,
+        issue_date: issueDate || undefined,
         pharmacy_id: pharmacyId || undefined,
       };
       const res = await api.post<ApiResponse<{ prescription_id: string; status: string }>>(

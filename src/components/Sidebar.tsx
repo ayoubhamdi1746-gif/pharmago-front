@@ -32,6 +32,13 @@ const navKeys: Record<Role, { href: string; key: string }[]> = {
     { href: "/admin/pharmacies", key: "sidebar.pharmacies" },
     { href: "/admin/payouts", key: "sidebar.payouts" },
   ],
+  super_admin: [
+    { href: "/super-admin/dashboard", key: "sidebar.super_admin.overview" },
+    { href: "/super-admin/users", key: "sidebar.super_admin.users" },
+    { href: "/admin/onboarding", key: "sidebar.onboarding" },
+    { href: "/admin/pharmacies", key: "sidebar.pharmacies" },
+    { href: "/admin/payouts", key: "sidebar.payouts" },
+  ],
 };
 
 const roleColors: Record<Role, { bg: string; text: string; dot: string }> = {
@@ -40,6 +47,7 @@ const roleColors: Record<Role, { bg: string; text: string; dot: string }> = {
   doctor: { bg: "bg-blue-50", text: "text-blue-600", dot: "bg-blue-500" },
   driver: { bg: "bg-teal-50", text: "text-teal-600", dot: "bg-teal-500" },
   admin: { bg: "bg-purple-50", text: "text-purple-600", dot: "bg-purple-500" },
+  super_admin: { bg: "bg-red-50", text: "text-red-600", dot: "bg-red-500" },
 };
 
 export default function Sidebar({ role }: { role: Role }) {

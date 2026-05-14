@@ -102,6 +102,8 @@ const config: Config = {
         lg: "var(--shadow-lg)",
         "glow-green": "0 0 20px rgba(0, 212, 170, 0.3), 0 0 60px rgba(0, 212, 170, 0.1)",
         "glow-red": "0 0 12px rgba(255, 77, 109, 0.3), 0 0 24px rgba(255, 77, 109, 0.1)",
+        neumorphic: "var(--shadow-neumorphic)",
+        "neumorphic-inset": "var(--shadow-neumorphic-inset)",
       },
       backdropBlur: {
         glass: "20px",

@@ -7,6 +7,8 @@ import RoleGuard from "@/components/RoleGuard";
 import StatusBadge from "@/components/StatusBadge";
 import Skeleton from "@/components/Skeleton";
 import Modal from "@/components/Modal";
+import GlassCard from "@/components/ui/GlassCard";
+import NeoButton from "@/components/ui/NeoButton";
 import api from "@/lib/api";
 import type { ApiResponse, DoctorConfirmationRequest } from "@/lib/types";
 import { t, type Locale } from "@/lib/i18n";
@@ -96,21 +98,22 @@ export default function DoctorDashboard() {
             <p className="text-sm text-gray-500">{t(locale, "doctor.subtitle")}</p>
           </div>
           {isDev && (
-            <button onClick={handleSeed} disabled={seeding}
-              className="px-4 py-2 rounded-btn text-xs font-medium text-white bg-[#00D4AA] hover:bg-[#009B7D] transition-all duration-200 disabled:opacity-60">
-              {seeding ? "..." : t(locale, "doctor.seed")}
-            </button>
+            <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm">
+              {t(locale, "doctor.seed")}
+            </NeoButton>
           )}
         </motion.div>
 
         {awaiting.length > 0 && (
-          <motion.div variants={item} className="bg-amber-50 border border-amber-200 rounded-card p-4 flex items-center gap-3">
-            <svg className="w-5 h-5 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-            <p className="text-sm font-medium text-amber-800">
-              {awaiting.length} {t(locale, "doctor.banner_count")}
-            </p>
+          <motion.div variants={item}>
+            <GlassCard intensity="light" glow="none" hover={false} className="!bg-amber-50/80 border-amber-200"><div className="flex items-center gap-3">
+              <svg className="w-5 h-5 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <p className="text-sm font-medium text-amber-800">
+                {awaiting.length} {t(locale, "doctor.banner_count")}
+              </p>
+            </div></GlassCard>
           </motion.div>
         )}
 
@@ -126,7 +129,7 @@ export default function DoctorDashboard() {
                 <h2 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide">{t(locale, "doctor.awaiting")}</h2>
                 <div className="space-y-3">
                   {awaiting.map((c) => (
-                    <div key={c.id} className="bg-white border-2 border-amber-200 rounded-card shadow-soft p-4">
+                    <GlassCard key={c.id} intensity="light" glow="none" hover={false} className="!bg-white border-2 border-amber-200"><div className="p-1">
                       <div className="flex items-start justify-between">
                         <div className="space-y-2 flex-1">
                           <div className="flex items-center gap-3">
@@ -148,12 +151,11 @@ export default function DoctorDashboard() {
                             <Countdown expiresAt={c.expires_at} locale={locale} />
                           </div>
                         </div>
-                        <button onClick={() => setConfirmId(c.prescription_id)}
-                          className="px-5 py-2.5 rounded-btn text-sm font-medium text-white bg-[#00C853] hover:bg-[#009B4D] transition-colors duration-200 shadow-sm">
+                        <NeoButton onClick={() => setConfirmId(c.prescription_id)} variant="primary" size="md">
                           {t(locale, "doctor.confirm")}
-                        </button>
+                        </NeoButton>
                       </div>
-                    </div>
+                    </div></GlassCard>
                   ))}
                 </div>
               </motion.div>
@@ -164,10 +166,12 @@ export default function DoctorDashboard() {
                 <h2 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide">{t(locale, "doctor.signed")}</h2>
                 <div className="space-y-2">
                   {signed.map((c) => (
-                    <div key={c.id} className="bg-[#F0FDF9] border border-[#A7F3D0] rounded-card p-4 flex items-center gap-3 opacity-70">
-                      <span className="text-sm text-[#022C22]">{c.medicament || `#${c.prescription_id.slice(0, 8)}`}</span>
-                      <StatusBadge status={c.status} locale={locale} />
-                    </div>
+                    <GlassCard key={c.id} intensity="light" glow="green" hover={false}>
+                      <div className="flex items-center gap-3 opacity-70">
+                        <span className="text-sm text-[#022C22]">{c.medicament || `#${c.prescription_id.slice(0, 8)}`}</span>
+                        <StatusBadge status={c.status} locale={locale} />
+                      </div>
+                    </GlassCard>
                   ))}
                 </div>
               </motion.div>
@@ -178,10 +182,12 @@ export default function DoctorDashboard() {
                 <h2 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide">{t(locale, "doctor.expired")}</h2>
                 <div className="space-y-2">
                   {expired.map((c) => (
-                    <div key={c.id} className="bg-[#F0FDF9] border border-[#A7F3D0] rounded-card p-4 flex items-center gap-3 opacity-50">
-                      <span className="text-sm text-[#022C22]">{c.medicament || `#${c.prescription_id.slice(0, 8)}`}</span>
-                      <StatusBadge status={c.status} locale={locale} />
-                    </div>
+                    <GlassCard key={c.id} intensity="light" glow="none" hover={false}>
+                      <div className="flex items-center gap-3 opacity-50">
+                        <span className="text-sm text-[#022C22]">{c.medicament || `#${c.prescription_id.slice(0, 8)}`}</span>
+                        <StatusBadge status={c.status} locale={locale} />
+                      </div>
+                    </GlassCard>
                   ))}
                 </div>
               </motion.div>

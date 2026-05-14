@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import RoleGuard from "@/components/RoleGuard";
 import StatusBadge from "@/components/StatusBadge";
 import Skeleton from "@/components/Skeleton";
+import GlassCard from "@/components/ui/GlassCard";
+import NeoButton from "@/components/ui/NeoButton";
 import api from "@/lib/api";
 import type { ApiResponse, PrescriptionVerification, PrescriptionItemDetail } from "@/lib/types";
 import { staggerContainer, staggerItem } from "@/lib/motion";
@@ -44,11 +46,8 @@ function StatCard({
 }) {
   const count = useCountUp(value);
   return (
-    <motion.div
-      variants={staggerItem}
-      className={`bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-soft p-4 transition-all duration-200 hover:border-[#00D4AA] hover:shadow-[0_0_20px_rgba(0,212,170,0.15)] ${glow || ""}`}
-    >
-      <div className="flex items-center gap-3">
+    <GlassCard intensity="light" glow={glow ? "green" : "none"} hover={true} className={glow || ""}>
+      <div className="flex items-center gap-3 p-1">
         <div className="w-10 h-10 rounded-lg bg-[#00D4AA]/10 flex items-center justify-center text-[#00D4AA]">
           {icon}
         </div>
@@ -57,7 +56,7 @@ function StatCard({
           <p className="text-xs text-gray-500">{label}</p>
         </div>
       </div>
-    </motion.div>
+    </GlassCard>
   );
 }
 
@@ -249,30 +248,23 @@ export default function PharmacistDashboard() {
             {t(locale, "pharmacist.queue.title")}
           </h1>
           {isDev && (
-            <button
-              onClick={handleSeed}
-              disabled={seeding}
-              className="px-4 py-2 rounded-btn text-xs font-medium text-white bg-[#00D4AA] hover:bg-[#009B7D] transition-all duration-200 disabled:opacity-60"
-            >
-              {seeding ? "..." : t(locale, "pharmacist.seed")}
-            </button>
+            <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm">
+              {t(locale, "pharmacist.seed")}
+            </NeoButton>
           )}
         </motion.div>
 
         <motion.div variants={staggerItem}>
           <div className="flex gap-2 flex-wrap">
             {filters.map((f) => (
-              <button
+              <NeoButton
                 key={f.value}
                 onClick={() => setFilter(f.value)}
-                className={`px-3 py-1.5 rounded-btn text-xs font-medium transition-all duration-200 active:scale-[0.96] ${
-                  filter === f.value
-                    ? "bg-[#00D4AA] text-white"
-                    : "bg-[#F0FDF9] text-gray-500 hover:text-[#022C22] hover:border-[#00D4AA] border border-[#A7F3D0]"
-                }`}
+                variant={filter === f.value ? "primary" : "ghost"}
+                size="sm"
               >
                 {t(locale, f.label)}
-              </button>
+              </NeoButton>
             ))}
           </div>
         </motion.div>
@@ -291,19 +283,11 @@ export default function PharmacistDashboard() {
               const hasItems = pv.items && pv.items.length > 0;
               const confStatus = pv.doctor_confirmation_status;
               return (
-                <motion.div
-                  key={pv.prescription_id}
-                  variants={staggerItem}
-                  whileHover={{ x: 2 }}
-                  className={`rounded-card shadow-soft p-4 border-l-2 transition-all duration-200 hover:border-[#00D4AA] ${
-                    isHighRisk
-                      ? "bg-[#FFF0F0] border border-[#FF4D6D]/30 border-l-[#FF4D6D] hover:shadow-[0_0_20px_rgba(255,77,109,0.15)]"
-                      : pv.status === "VERIFIED"
-                      ? "bg-[#F0FDF9] border border-[#A7F3D0] border-l-[#00D4AA] hover:shadow-[0_0_20px_rgba(0,212,170,0.15)]"
-                      : canVerify
-                      ? "bg-[#F0FDF9] border border-[#A7F3D0] border-l-[#E69E3E] hover:shadow-[0_0_20px_rgba(0,212,170,0.15)]"
-                      : "bg-[#F0FDF9] border border-[#A7F3D0] border-l-[#A7F3D0] hover:shadow-[0_0_20px_rgba(0,212,170,0.15)]"
-                  }`}
+                <GlassCard
+                  intensity="light"
+                  glow={isHighRisk ? "red" : "green"}
+                  hover={true}
+                  className={`border-l-2 ${isHighRisk ? "border-l-[#FF4D6D]" : pv.status === "VERIFIED" ? "border-l-[#00D4AA]" : canVerify ? "border-l-[#E69E3E]" : "border-l-[#A7F3D0]"}`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -350,42 +334,41 @@ export default function PharmacistDashboard() {
                       )}
                     </div>
                     <div className="flex gap-2 flex-wrap justify-end">
-                      <button
+                      <NeoButton
                         onClick={() => handleVerify(pv.prescription_id)}
                         disabled={!canVerify}
-                        className={`px-3 py-1.5 rounded-btn text-xs font-medium transition-all duration-200 active:scale-[0.96] ${
-                          canVerify
-                            ? "bg-[#00D4AA] text-white hover:bg-[#009B7D]"
-                            : "bg-gray-100 text-gray-400 cursor-not-allowed border border-[#A7F3D0]"
-                        }`}
+                        variant={canVerify ? "primary" : "ghost"}
+                        size="sm"
                       >
                         {t(locale, "queue.verify")}
-                      </button>
+                      </NeoButton>
                       {canDispense && (
                         <motion.div
                           initial={{ opacity: 0, x: 20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.2, ease: "easeInOut" }}
                         >
-                          <button
+                          <NeoButton
                             onClick={() => handleDispense(pv.prescription_id)}
-                            className="px-3 py-1.5 rounded-btn text-xs font-medium bg-[#00D4AA] text-white hover:bg-[#009B7D] transition-all duration-200 active:scale-[0.96]"
+                            variant="primary"
+                            size="sm"
                           >
                             {t(locale, "queue.dispense")}
-                          </button>
+                          </NeoButton>
                         </motion.div>
                       )}
                       {pv.status === "VERIFIED" && (
-                        <button
+                        <NeoButton
                           onClick={() => openAssignModal(pv.prescription_id)}
-                          className="px-3 py-1.5 rounded-btn text-xs font-medium bg-[#022C22] text-white hover:bg-[#0B4D3E] transition-all duration-200 active:scale-[0.96]"
+                          variant="neumorphic"
+                          size="sm"
                         >
                           {t(locale, "pharmacist.assignDelivery")}
-                        </button>
+                        </NeoButton>
                       )}
                     </div>
                   </div>
-                </motion.div>
+                </GlassCard>
               );
             })}
             {filtered.length === 0 && (
@@ -433,19 +416,22 @@ export default function PharmacistDashboard() {
               />
             </div>
             <div className="flex gap-3 justify-end pt-2">
-              <button
+              <NeoButton
                 onClick={() => setShowAssignModal(false)}
-                className="px-4 py-2 rounded-btn text-sm font-medium text-gray-500 hover:text-[#022C22] border border-[#A7F3D0] transition-colors"
+                variant="ghost"
+                size="md"
               >
                 {t(locale, "pharmacist.assignModal.cancel")}
-              </button>
-              <button
+              </NeoButton>
+              <NeoButton
                 onClick={handleAssignDelivery}
                 disabled={assigningId !== null || !pickupCoords}
-                className="px-4 py-2 rounded-btn text-sm font-medium text-white bg-[#00D4AA] hover:bg-[#009B7D] transition-all duration-200 disabled:opacity-60"
+                loading={assigningId !== null}
+                variant="primary"
+                size="md"
               >
-                {assigningId ? "..." : t(locale, "pharmacist.assignModal.confirm")}
-              </button>
+                {t(locale, "pharmacist.assignModal.confirm")}
+              </NeoButton>
             </div>
           </motion.div>
         </div>

@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import RoleGuard from "@/components/RoleGuard";
 import StatusBadge from "@/components/StatusBadge";
 import Skeleton from "@/components/Skeleton";
+import GlassCard from "@/components/ui/GlassCard";
+import NeoButton from "@/components/ui/NeoButton";
 import api from "@/lib/api";
 import type { ApiResponse, DeliveryTicket } from "@/lib/types";
 import { t, type Locale } from "@/lib/i18n";
@@ -140,10 +142,9 @@ export default function DriverDashboard() {
         <motion.div variants={item} className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold text-[#022C22]">{t(locale, "driver.title")}</h1>
           {isDev && (
-            <button onClick={handleSeed} disabled={seeding}
-              className="px-4 py-2 rounded-btn text-xs font-medium text-white bg-[#00D4AA] hover:bg-[#009B7D] transition-all duration-200 disabled:opacity-60">
-              {seeding ? "..." : t(locale, "driver.seed")}
-            </button>
+            <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm">
+              {t(locale, "driver.seed")}
+            </NeoButton>
           )}
         </motion.div>
 
@@ -156,7 +157,7 @@ export default function DriverDashboard() {
           <>
             {activeTicket && (
               <motion.div variants={item}>
-                <div className="bg-white border-2 border-[#00D4AA] rounded-card shadow-[0_0_20px_rgba(0,212,170,0.15)] p-6 space-y-4">
+                <GlassCard intensity="light" glow="green" hover={false}><div className="p-6 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <span className="w-3 h-3 rounded-full bg-[#00D4AA] animate-pulse" />
@@ -189,15 +190,18 @@ export default function DriverDashboard() {
                       value={otpInputs[activeTicket.id] || ""}
                       onChange={(v) => setOtpInputs((prev) => ({ ...prev, [activeTicket.id]: v }))}
                     />
-                    <button
+                    <NeoButton
                       onClick={() => handleFulfill(activeTicket.id)}
                       disabled={(otpInputs[activeTicket.id]?.length || 0) !== 6}
-                      className="w-full py-3 rounded-btn text-sm font-medium text-white bg-[#00C853] hover:bg-[#009B4D] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      variant="primary"
+                      size="lg"
+                      className="w-full"
                     >
                       {t(locale, "driver.deliver")}
-                    </button>
+                    </NeoButton>
                   </div>
                 </div>
+                </GlassCard>
               </motion.div>
             )}
 
@@ -206,10 +210,12 @@ export default function DriverDashboard() {
                 <h2 className="text-lg font-semibold text-[#022C22] mb-3">{t(locale, "driver.history")}</h2>
                 <div className="space-y-2">
                   {history.map((t) => (
-                    <div key={t.id} className="bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-soft p-4 flex items-center justify-between">
-                      <span className="text-sm text-gray-600 font-mono">#{t.id.slice(0, 8)}</span>
-                      <StatusBadge status="delivered" locale={locale} />
-                    </div>
+                    <GlassCard key={t.id} intensity="light" glow="green" hover={false}>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 font-mono">#{t.id.slice(0, 8)}</span>
+                        <StatusBadge status="delivered" locale={locale} />
+                      </div>
+                    </GlassCard>
                   ))}
                 </div>
               </motion.div>

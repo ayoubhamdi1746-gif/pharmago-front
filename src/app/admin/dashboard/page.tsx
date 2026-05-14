@@ -7,6 +7,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, Cart
 import RoleGuard from "@/components/RoleGuard";
 import Skeleton from "@/components/Skeleton";
 import Modal from "@/components/Modal";
+import GlassCard from "@/components/ui/GlassCard";
+import NeoButton from "@/components/ui/NeoButton";
 import api from "@/lib/api";
 import type { ApiResponse, VettedDriver, DashboardStats, RevenueData, Subscription as SubType } from "@/lib/types";
 import { t, type Locale } from "@/lib/i18n";
@@ -23,9 +25,9 @@ const item = {
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-soft p-4 transition-all duration-200 hover:border-[#00D4AA] hover:shadow-[0_0_20px_rgba(0,212,170,0.15)] ${className}`}>
+    <GlassCard intensity="light" glow="green" hover={true} className={className}>
       {children}
-    </div>
+    </GlassCard>
   );
 }
 
@@ -248,17 +250,13 @@ export default function AdminDashboard() {
           </h1>
           <div className="flex items-center gap-2">
             {isDev && (
-              <button onClick={handleSeed} disabled={seeding}
-                className="px-4 py-2 rounded-btn text-xs font-medium text-white bg-[#00D4AA] hover:bg-[#009B7D] transition-all duration-200 disabled:opacity-60">
-                {seeding ? "..." : t(locale, "admin.seed")}
-              </button>
+              <NeoButton onClick={handleSeed} disabled={seeding} loading={seeding} variant="primary" size="sm">
+                {t(locale, "admin.seed")}
+              </NeoButton>
             )}
-            <button
-              onClick={() => setShowRegister(true)}
-              className="px-4 py-2 rounded-btn text-sm font-medium text-white bg-[#00D4AA] hover:bg-[#009B7D] transition-colors duration-200"
-            >
+            <NeoButton onClick={() => setShowRegister(true)} variant="primary" size="md">
               {t(locale, "admin.register_driver")}
-            </button>
+            </NeoButton>
           </div>
         </motion.div>
 
@@ -282,16 +280,14 @@ export default function AdminDashboard() {
         </motion.div>
 
         <motion.div variants={item} className="grid grid-cols-3 gap-3">
-          <button onClick={() => setShowRegister(true)}
-            className="flex items-center gap-2 px-4 py-3 rounded-btn text-sm font-medium text-white bg-[#00D4AA] hover:bg-[#009B7D] transition-all duration-200">
+          <NeoButton onClick={() => setShowRegister(true)} variant="primary" size="md" className="flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
             {t(locale, "admin.register_driver")}
-          </button>
-          <button onClick={() => setShowSubForm(true)}
-            className="flex items-center gap-2 px-4 py-3 rounded-btn text-sm font-medium text-white bg-[#022C22] hover:bg-[#0B4D3E] transition-all duration-200">
+          </NeoButton>
+          <NeoButton onClick={() => setShowSubForm(true)} variant="neumorphic" size="md" className="flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
             {t(locale, "admin.billing.new")}
-          </button>
+          </NeoButton>
           <a href="/admin/payouts"
             className="flex items-center gap-2 px-4 py-3 rounded-btn text-sm font-medium text-[#022C22] bg-[#F0FDF9] border border-[#A7F3D0] hover:border-[#00D4AA] transition-all duration-200">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -302,12 +298,9 @@ export default function AdminDashboard() {
         <motion.div variants={item}>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold text-[#022C22]">{t(locale, "admin.billing.title")}</h2>
-            <button
-              onClick={() => setShowSubForm(true)}
-              className="px-4 py-2 rounded-btn text-sm font-medium text-white bg-[#00D4AA] hover:bg-[#009B7D] transition-colors duration-200"
-            >
+            <NeoButton onClick={() => setShowSubForm(true)} variant="primary" size="md">
               {t(locale, "admin.billing.new")}
-            </button>
+            </NeoButton>
           </div>
           <div className="grid grid-cols-4 gap-4 mb-4">
             <Card>
@@ -414,13 +407,14 @@ export default function AdminDashboard() {
                         d.is_active ? "bg-[#00C853]" : "bg-gray-300"
                       }`}
                     />
-                    <button
+                    <NeoButton
                       onClick={() => setSuspendHash(d.driver_token_hash)}
                       disabled={!d.is_active}
-                      className="px-3 py-1.5 rounded-btn text-xs font-medium text-[#FF4D6D] hover:bg-[#FF4D6D]/10 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      variant="ghost"
+                      size="sm"
                     >
                       {t(locale, "admin.drivers.suspend")}
-                    </button>
+                    </NeoButton>
                   </div>
                 </Card>
               ))}
@@ -459,19 +453,12 @@ export default function AdminDashboard() {
                 />
               </div>
               <div className="flex gap-3 justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowRegister(false)}
-                  className="px-4 py-2 rounded-btn text-sm font-medium text-gray-600 bg-white border border-[#A7F3D0] hover:bg-[#F0FDF9] transition-colors duration-200"
-                >
+                <NeoButton onClick={() => setShowRegister(false)} variant="ghost" size="md">
                   {t(locale, "admin.register.cancel")}
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-btn text-sm font-medium text-white bg-[#00D4AA] hover:bg-[#009B7D] transition-colors duration-200"
-                >
+                </NeoButton>
+                <NeoButton type="submit" variant="primary" size="md">
                   {t(locale, "admin.register.submit")}
-                </button>
+                </NeoButton>
               </div>
             </motion.form>
           </div>
@@ -520,19 +507,12 @@ export default function AdminDashboard() {
                 </select>
               </div>
               <div className="flex gap-3 justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowSubForm(false)}
-                  className="px-4 py-2 rounded-btn text-sm font-medium text-gray-600 bg-white border border-[#A7F3D0] hover:bg-[#F0FDF9] transition-colors duration-200"
-                >
+                <NeoButton onClick={() => setShowSubForm(false)} variant="ghost" size="md">
                   {t(locale, "admin.subscription.cancel")}
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-btn text-sm font-medium text-white bg-[#00D4AA] hover:bg-[#009B7D] transition-colors duration-200"
-                >
+                </NeoButton>
+                <NeoButton type="submit" variant="primary" size="md">
                   {t(locale, "admin.subscription.create")}
-                </button>
+                </NeoButton>
               </div>
             </motion.form>
           </div>

@@ -23,7 +23,7 @@ import {
   ClipboardList,
 } from "lucide-react";
 
-const navKeys: Record<Role, { href: string; key: string; icon: React.ComponentType<{ className?: string }> }[]> = {
+const navKeys: Record<Role, { href: string; key: string; icon?: React.ComponentType<{ className?: string }> }[]> = {
   patient: [
     { href: "/patient/dashboard", key: "sidebar.dashboard", icon: LayoutDashboard },
     { href: "/patient/prescription/new", key: "sidebar.new_prescription", icon: PackagePlus },
@@ -114,7 +114,7 @@ export default function Sidebar({ role }: { role: Role }) {
                       : "text-gray-500 hover:text-[#022C22] hover:bg-[#F0FDF9] border-l-[3px] border-transparent"
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${active ? "text-[#00D4AA]" : "text-gray-400"}`} />
+                  {Icon && <Icon className={`w-4 h-4 ${active ? "text-[#00D4AA]" : "text-gray-400"}`} />}
                   {t(locale, item.key)}
                 </div>
               </Link>

@@ -105,7 +105,7 @@ export default function SuperAdminUsers() {
         className="max-w-6xl mx-auto space-y-6"
       >
         <motion.div variants={item}>
-          <h1 className="text-2xl font-semibold text-[#022C22]">Gestion des utilisateurs</h1>
+          <h1 className="text-2xl font-semibold text-white">Gestion des utilisateurs</h1>
           <p className="text-sm text-gray-500">{data?.total ?? 0} utilisateurs au total</p>
         </motion.div>
 
@@ -121,10 +121,10 @@ export default function SuperAdminUsers() {
               {(data?.users ?? []).map((u) => (
                 <div
                   key={u.id}
-                  className="flex items-center justify-between p-4 bg-[#F0FDF9] border border-[#A7F3D0] rounded-card hover:border-[#00D4AA] transition-all"
+                  className="flex items-center justify-between p-4 bg-[#0A1628]/80 border-[#00D4AA]/20 hover:border-[#00D4AA]/40 transition-all"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#022C22]">
+                    <p className="text-sm font-medium text-white">
                       {u.full_name || u.username}
                       {!u.is_active && (
                         <span className="ml-2 text-xs text-[#FF4D6D]">(désactivé)</span>
@@ -200,15 +200,15 @@ export default function SuperAdminUsers() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative bg-[#F0FDF9] border border-[#A7F3D0] rounded-card shadow-soft p-6 max-w-sm w-full space-y-4"
+              className="relative bg-[#0A1628]/80 border border-[#A7F3D0] rounded-card shadow-soft p-6 max-w-sm w-full space-y-4"
             >
-              <h3 className="text-lg font-semibold text-[#022C22]">
+              <h3 className="text-lg font-semibold text-white">
                 Changer le rôle — {changingRole.username}
               </h3>
               <select
                 value={newRole}
                 onChange={(e) => setNewRole(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-[#022C22] text-sm"
+                className="w-full px-3 py-2.5 rounded-btn border border-[#A7F3D0] bg-white text-white text-sm"
               >
                 {VALID_ROLES.filter((r) => r !== "super_admin").map((r) => (
                   <option key={r} value={r}>{r}</option>

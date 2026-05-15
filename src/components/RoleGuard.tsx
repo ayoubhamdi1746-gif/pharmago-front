@@ -37,7 +37,7 @@ export default function RoleGuard({
 
   if (user === "loading") {
     return (
-      <div className="min-h-screen bg-white p-6">
+      <div className="min-h-screen bg-[#020814] p-6">
         <div className="max-w-6xl mx-auto space-y-4">
           <Skeleton className="h-12 w-48" />
           <Skeleton className="h-64 w-full" />
@@ -48,7 +48,7 @@ export default function RoleGuard({
   }
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-[#020814] flex">
       <Sidebar role={allowedRole} />
       <div className="flex-1 flex flex-col">
         <Topbar role={allowedRole} />

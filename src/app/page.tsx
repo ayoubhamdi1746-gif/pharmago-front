@@ -260,9 +260,21 @@ export default function LandingPage() {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setSubmitting(false);
-    setSubmitted(true);
+    try {
+      const { data: res } = await (await import("@/lib/api")).default.post("/public/demo-request", {
+        name: form.name,
+        pharmacy: form.pharmacy,
+        city: form.city,
+        phone: form.phone,
+        message: form.message,
+      });
+      setSubmitted(true);
+      window.dispatchEvent(new CustomEvent("toast", { detail: { type: "success", message: "Demande envoyée ! Nous vous contacterons bientôt." } }));
+    } catch {
+      window.dispatchEvent(new CustomEvent("toast", { detail: { type: "error", message: "Erreur lors de l'envoi. Veuillez réessayer." } }));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

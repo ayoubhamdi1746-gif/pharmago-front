@@ -49,6 +49,7 @@ const navKeys: Record<Role, { href: string; key: string; icon?: React.ComponentT
   super_admin: [
     { href: "/super-admin/dashboard", key: "sidebar.super_admin.overview" },
     { href: "/super-admin/users", key: "sidebar.super_admin.users" },
+    { href: "/super-admin/demo-requests", key: "sidebar.super_admin.demo_requests" },
     { href: "/admin/onboarding", key: "sidebar.onboarding" },
     { href: "/admin/pharmacies", key: "sidebar.pharmacies" },
     { href: "/admin/payouts", key: "sidebar.payouts" },

@@ -1,24 +1,26 @@
 import type { Metadata } from "next";
-import { Providers } from "@/components/providers";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import { ClientLayout } from "@/components/ClientLayout";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PharmaGo — Plateforme de livraison de médicaments en Tunisie",
-  description: "Sécurisez, vérifiez et livrez des ordonnances médicales en toute confiance. La solution N°1 pour les pharmacies tunisiennes.",
+  title: "PharmaGo — La livraison médicale sécurisée en Tunisie",
+  description: "Ordonnances vérifiées, chiffrement bout-en-bout, livreurs certifiés. Le premier SaaS de livraison médicale tunisien. Pharmacie en ligne, livraison médicaments Tunis.",
+  keywords: "pharmacie tunisie, livraison médicaments, ordonnance en ligne, pharmacie tunis, livraison médicale, prescription électronique, SaaS pharmaceutique, PharmaGo",
   icons: { icon: "/favicon.svg" },
   openGraph: {
-    title: "PharmaGo — Plateforme de livraison de médicaments en Tunisie",
-    description: "Sécurisez, vérifiez et livrez des ordonnances médicales en toute confiance. La solution N°1 pour les pharmacies tunisiennes.",
+    title: "PharmaGo — La livraison médicale sécurisée en Tunisie",
+    description: "Ordonnances vérifiées par des pharmaciens agréés. Chiffrement bout-en-bout. Livreurs certifiés. Le premier SaaS de livraison médicale tunisien.",
     url: "https://pharmago-front.vercel.app",
     siteName: "PharmaGo",
     type: "website",
+    locale: "fr_TN",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PharmaGo — Plateforme de livraison de médicaments en Tunisie",
-    description: "Sécurisez, vérifiez et livrez des ordonnances médicales en toute confiance.",
+    title: "PharmaGo — Livraison médicale sécurisée 🇹🇳",
+    description: "La solution N°1 pour les pharmacies tunisiennes. Ordonnances vérifiées, livraison sécurisée.",
   },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({
@@ -37,9 +39,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased font-sans">
-        <ErrorBoundary>
-          <Providers>{children}</Providers>
-        </ErrorBoundary>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

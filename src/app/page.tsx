@@ -26,16 +26,18 @@ function Reveal({ children, className = "", delay = 0 }: { children: React.React
 function useLiveCounter(target: number) {
   const [count, setCount] = useState(0);
   useEffect(() => {
-    let start = 0;
-    const end = target;
+    if (target === 0) { setCount(0); return; }
+    let startTime: number | null = null;
     const duration = 2000;
-    const step = Math.ceil(end / (duration / 16));
-    const timer = setInterval(() => {
-      start = Math.min(start + step, end);
-      setCount(start);
-      if (start >= end) clearInterval(timer);
-    }, 16);
-    return () => clearInterval(timer);
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * target));
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
   }, [target]);
   return count;
 }

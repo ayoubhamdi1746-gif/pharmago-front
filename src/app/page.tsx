@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring, useInView, AnimatePresence } from "f
 import { staggerContainer, staggerItem } from "@/lib/motion";
 import api from "@/lib/api";
 import MagneticButton from "@/components/MagneticButton";
+import HeroScene from "@/components/HeroScene";
 import { t, type Locale } from "@/lib/i18n";
 import Logo from "@/components/Logo";
 
@@ -537,7 +538,8 @@ export default function LandingPage() {
 
       {/* HERO */}
       <section className="relative min-h-screen flex items-center overflow-hidden bg-[#020814]">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <HeroScene />
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pt-32 pb-20">
           <div className="absolute rounded-full" style={{ width: "60vw", height: "60vw", top: "-10%", right: "-15%", background: "radial-gradient(circle, rgba(0,212,170,0.25) 0%, transparent 70%)", animation: "blob1 20s ease-in-out infinite alternate" }} />
           <div className="absolute rounded-full" style={{ width: "50vw", height: "50vw", bottom: "-10%", left: "-10%", background: "radial-gradient(circle, rgba(0,212,170,0.15) 0%, transparent 70%)", animation: "blob2 18s ease-in-out infinite alternate" }} />
           <div className="absolute rounded-full" style={{ width: "40vw", height: "40vw", top: "40%", left: "30%", background: "radial-gradient(circle, rgba(0,212,170,0.1) 0%, transparent 60%)", animation: "blob3 25s ease-in-out infinite alternate" }} />
@@ -695,6 +697,105 @@ export default function LandingPage() {
         </div>
 
         <ScrollIndicator locale={locale} />
+      </section>
+
+      {/* STATS */}
+      {(() => {
+        const stats = [
+          { value: 1295, label: "Ordonnances sécurisées", suffix: "+" },
+          { value: 98, label: "Taux de satisfaction", suffix: "%" },
+          { value: 24, label: "Délai d'activation", suffix: "h" },
+          { value: 0, label: "Erreur de livraison", suffix: "" },
+        ];
+        return (
+          <section className="relative py-20 bg-[#020814] overflow-hidden">
+            <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, #020814 0%, #0A1628 100%)" }} />
+            <div className="relative max-w-6xl mx-auto px-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0">
+                {stats.map((stat, i) => {
+                  const ref = useRef<HTMLDivElement>(null);
+                  const inView = useInView(ref, { once: true, margin: "-50px" });
+                  const val = useLiveCounter(stat.value);
+                  return (
+                    <div key={i} ref={ref} className={`text-center ${i < 3 ? "md:border-r border-[#00D4AA]/10" : ""}`}>
+                      <Reveal delay={i * 0.1}>
+                        <div className="text-5xl md:text-6xl font-bold mb-2" style={{ background: "linear-gradient(135deg, #00D4AA 0%, #00E5FF 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                          {val.toLocaleString()}{stat.suffix}
+                        </div>
+                        <div className="text-xs text-[#64748B]">{stat.label}</div>
+                      </Reveal>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
+
+      {/* DEMO INTERACTIVE */}
+      <section className="relative py-24 bg-[#0A1628]">
+        <div className="max-w-5xl mx-auto px-6">
+          <Reveal>
+            <div className="text-center mb-16">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">Interactive</span>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">Essayez l&apos;interface — c&apos;est votre futur</h2>
+            </div>
+          </Reveal>
+          <Reveal delay={0.2}>
+            <div className="relative">
+              <div className="bg-[#020814] border border-[#00D4AA]/20 rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,212,170,0.15)]">
+                <div className="flex items-center gap-3 px-5 py-3 border-b border-[#00D4AA]/10">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-[#FF5F57]" />
+                    <div className="w-3 h-3 rounded-full bg-[#FFBD2D]" />
+                    <div className="w-3 h-3 rounded-full bg-[#28C840]" />
+                  </div>
+                  <span className="text-xs text-[#64748B]">Pharmacie Centrale — Tableau de bord</span>
+                </div>
+                <div className="p-6">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {[
+                      { patient: "Patient #4821", meds: "Amoxicillin 500mg", status: "pending", label: "En attente" },
+                      { patient: "Patient #3156", meds: "Omeprazole 20mg", status: "high_risk", label: "Haut risque" },
+                      { patient: "Patient #7293", meds: "Paracetamol 1g", status: "verified", label: "Vérifié" },
+                    ].map((rx, i) => (
+                      <div key={i} className="bg-[#0A1628] border border-[#00D4AA]/20 rounded-xl p-5 transition-all duration-300 hover:border-[#00D4AA]/50">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-sm font-semibold text-white">{rx.patient}</span>
+                          <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                            rx.status === "pending" ? "bg-yellow-500/10 text-yellow-400 border border-yellow-500/30" :
+                            rx.status === "high_risk" ? "bg-red-500/10 text-red-400 border border-red-500/30 animate-pulse" :
+                            "bg-green-500/10 text-green-400 border border-green-500/30"
+                          }`}>{rx.label}</span>
+                        </div>
+                        <div className="text-xs text-[#64748B] mb-4">{rx.meds}</div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <button className="py-2 rounded-lg bg-[#00D4AA]/10 text-xs font-medium text-[#00D4AA] hover:bg-[#00D4AA]/20 transition-colors border border-[#00D4AA]/20">
+                            Vérifier
+                          </button>
+                          <button className="py-2 rounded-lg bg-[#FF4D6D]/10 text-xs font-medium text-[#FF4D6D] hover:bg-[#FF4D6D]/20 transition-colors border border-[#FF4D6D]/20">
+                            Rejeter
+                          </button>
+                          <button className="py-2 rounded-lg bg-[#FFBD2D]/10 text-xs font-medium text-[#FFBD2D] hover:bg-[#FFBD2D]/20 transition-colors border border-[#FFBD2D]/20">
+                            Risque
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-6 flex items-center justify-center gap-3 text-xs text-[#64748B]">
+                    <div className="w-2 h-2 rounded-full bg-[#00D4AA] animate-pulse" />
+                    <span>3 ordonnances en attente</span>
+                    <span>·</span>
+                    <span>Mis à jour il y a 12s</span>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute -bottom-4 left-[50%] -translate-x-1/2 w-[60%] h-6 rounded-full bg-[#00D4AA]/5 blur-xl" />
+            </div>
+          </Reveal>
+        </div>
       </section>
 
       {/* TRUST BAR */}
@@ -1123,6 +1224,45 @@ export default function LandingPage() {
               )}
             </div>
           </Reveal>
+        </div>
+      </section>
+
+      {/* ROADMAP */}
+      <section className="relative py-24 bg-[#0A1628]">
+        <div className="max-w-5xl mx-auto px-6">
+          <Reveal>
+            <div className="text-center mb-16">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">Roadmap</span>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">Prochaine étape : votre.application mobile</h2>
+            </div>
+          </Reveal>
+          <div className="relative">
+            <div className="absolute top-6 left-0 right-0 h-0.5 bg-[#00D4AA]/10" />
+            <Reveal>
+              <div className="relative grid grid-cols-1 md:grid-cols-5 gap-6">
+                {[
+                  { emoji: "✅", done: true, active: false, title: "Livraisons sécurisées", sub: "Q1 2025", desc: "Déploiement nationwide" },
+                  { emoji: "✅", done: true, active: false, title: "Vérification Rx", sub: "Q2 2025", desc: "IA + contrôle pharma" },
+                  { emoji: "🔄", done: false, active: true, title: "App Patient", sub: "Q3 2026", desc: "iOS + Android" },
+                  { emoji: "📋", done: false, active: false, title: "Intégration CNAM", sub: "Q4 2026", desc: "Couverture nationale" },
+                  { emoji: "🤖", done: false, active: false, title: "IA Interactions", sub: "2027", desc: "Détection risques" },
+                ].map((item, i) => (
+                  <div key={i} className="relative text-center">
+                    <div className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl transition-all duration-300 ${
+                      item.done ? "bg-[#00D4AA]/20 border-2 border-[#00D4AA]" :
+                      item.active ? "bg-[#FFBD2D]/20 border-2 border-[#FFBD2D] animate-pulse" :
+                      "bg-white/5 border-2 border-white/10"
+                    }`}>
+                      {item.done ? "✓" : item.emoji}
+                    </div>
+                    <h4 className={`text-sm font-semibold mb-1 ${item.done ? "text-white" : item.active ? "text-[#FFBD2D]" : "text-white/40"}`}>{item.title}</h4>
+                    <p className="text-xs text-[#64748B]">{item.sub}</p>
+                    <p className="text-[10px] text-white/30 mt-1">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
         </div>
       </section>
 

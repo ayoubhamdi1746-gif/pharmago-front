@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import RoleGuard from "@/components/RoleGuard";
@@ -39,6 +40,7 @@ function formatDate(iso: string | null) {
 }
 
 export default function SuperAdminDemoRequests() {
+  const [filter, setFilter] = useState<"all" | "new" | "processed">("all");
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["demo-requests"],
     queryFn: async () => {
@@ -57,11 +59,25 @@ export default function SuperAdminDemoRequests() {
     }
   };
 
+  const filteredRequests = (data?.requests ?? []).filter(r =>
+    filter === "all" || (filter === "new" && !r.is_processed) || (filter === "processed" && r.is_processed)
+  );
+
   return (
     <RoleGuard allowedRole="super_admin">
       <motion.div variants={container} initial="hidden" animate="show" className="max-w-5xl mx-auto space-y-6">
         <motion.div variants={item}>
-          <h1 className="text-2xl font-semibold text-white">Demandes de démo</h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-2xl font-semibold text-white">Demandes de démo</h1>
+            <div className="flex gap-1">
+              {([["all","Tous"],["new","Nouveaux"],["processed","Traités"]] as const).map(([val, label]) => (
+                <button key={val} onClick={() => setFilter(val)}
+                  className={`px-3 py-1.5 rounded-btn text-xs font-medium transition-all duration-200 ${filter===val?"bg-[#00D4AA]/20 text-[#00D4AA] border border-[#00D4AA]/40":"text-gray-400 border border-transparent hover:text-white"}`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
           <p className="text-sm text-gray-400">{data?.total ?? 0} demandes au total</p>
         </motion.div>
 
@@ -71,45 +87,57 @@ export default function SuperAdminDemoRequests() {
               <div key={i} className="h-20 bg-[#0A1628]/80 rounded-card animate-pulse" />
             ))}
           </div>
-        ) : (data?.requests ?? []).length === 0 ? (
+        ) : filteredRequests.length === 0 ? (
           <motion.div variants={item} className="text-center py-16 bg-[#0A1628]/80 rounded-card border border-[#00D4AA]/20">
-            <p className="text-gray-400">Aucune demande de démo pour le moment.</p>
+            <p className="text-gray-400">Aucune demande pour ce filtre.</p>
           </motion.div>
         ) : (
           <div className="space-y-3">
-            {(data?.requests ?? []).map((req) => (
-              <motion.div
-                key={req.id}
-                variants={item}
-                className="bg-[#0A1628]/80 border border-[#00D4AA]/20 rounded-card p-5 transition-all duration-200 hover:border-[#00D4AA]/40"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="text-sm font-medium text-white">{req.name}</p>
+            {filteredRequests.map((req) => {
+              const isNew = !req.is_processed && req.created_at && (Date.now() - new Date(req.created_at).getTime()) < 86400000;
+              return (
+                <motion.div
+                  key={req.id}
+                  variants={item}
+                  className="bg-[#0A1628]/80 border border-[#00D4AA]/20 rounded-card p-5 transition-all duration-200 hover:border-[#00D4AA]/40"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <p className="text-sm font-medium text-white">{req.name}</p>
+                        {isNew && (
+                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-red-500/20 text-red-400">Nouveau</span>
+                        )}
+                        {!req.is_processed && !isNew && (
+                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[#00D4AA]/20 text-[#00D4AA]">En attente</span>
+                        )}
+                        {req.is_processed && (
+                          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/20 text-emerald-400">Traité</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-[#00D4AA] font-medium">{req.pharmacy} · {req.city || "N/A"}</p>
+                      <p className="text-xs text-gray-400 mt-1">{req.phone}</p>
+                      {req.message && <p className="text-xs text-gray-400 mt-2 italic">"{req.message}"</p>}
+                      <p className="text-[10px] text-gray-600 mt-2">{formatDate(req.created_at)}</p>
+                    </div>
+                    <div className="flex flex-col gap-2 shrink-0">
+                      <a href={`tel:${req.phone}`}
+                        className="px-3 py-1.5 rounded-btn text-xs font-medium bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all duration-200 text-center">
+                        Appeler
+                      </a>
                       {!req.is_processed && (
-                        <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[#00D4AA]/20 text-[#00D4AA]">Nouvelle</span>
-                      )}
-                      {req.is_processed && (
-                        <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-gray-500/20 text-gray-400">Traité</span>
+                        <button
+                          onClick={() => handleMarkProcessed(req.id)}
+                          className="px-3 py-1.5 rounded-btn text-xs font-medium bg-[#00D4AA]/10 text-[#00D4AA] hover:bg-[#00D4AA]/20 transition-all duration-200"
+                        >
+                          Marquer traité
+                        </button>
                       )}
                     </div>
-                    <p className="text-xs text-[#00D4AA] font-medium">{req.pharmacy} · {req.city || "N/A"}</p>
-                    <p className="text-xs text-gray-400 mt-1">{req.phone}</p>
-                    {req.message && <p className="text-xs text-gray-400 mt-2 italic">"{req.message}"</p>}
-                    <p className="text-[10px] text-gray-600 mt-2">{formatDate(req.created_at)}</p>
                   </div>
-                  {!req.is_processed && (
-                    <button
-                      onClick={() => handleMarkProcessed(req.id)}
-                      className="shrink-0 px-3 py-1.5 rounded-btn text-xs font-medium bg-[#00D4AA]/10 text-[#00D4AA] hover:bg-[#00D4AA]/20 transition-all duration-200"
-                    >
-                      Marquer traité
-                    </button>
-                  )}
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </motion.div>

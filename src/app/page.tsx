@@ -42,6 +42,29 @@ function useLiveCounter(target: number) {
   return count;
 }
 
+function TypewriterWord({ word, delay }: { word: string; delay: number }) {
+  const [displayed, setDisplayed] = useState("");
+  useEffect(() => {
+    setDisplayed("");
+    let i = 0;
+    const t = setTimeout(() => {
+      const interval = setInterval(() => {
+        i++;
+        setDisplayed(word.slice(0, i));
+        if (i >= word.length) clearInterval(interval);
+      }, 60);
+      return () => clearInterval(interval);
+    }, delay * 1000);
+    return () => clearTimeout(t);
+  }, [word, delay]);
+  return (
+    <span>
+      {displayed}
+      <span className="inline-block w-0.5 h-[1em] bg-[#00D4AA] ml-0.5 animate-pulse align-middle" />
+    </span>
+  );
+}
+
 function AnimatedStepNumber({ target, inView: show }: { target: number; inView: boolean }) {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -178,6 +201,8 @@ const faqItems = [
   { qKey: "faq.q3", aKey: "faq.a3" },
   { qKey: "faq.q4", aKey: "faq.a4" },
   { qKey: "faq.q5", aKey: "faq.a5" },
+  { qKey: "faq.q6", aKey: "faq.a6" },
+  { qKey: "faq.q7", aKey: "faq.a7" },
 ];
 const PharmaciesIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -313,6 +338,7 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [locale, setLocale] = useState<Locale>("fr");
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [showStickyCta, setShowStickyCta] = useState(false);
   const secureCount = useLiveCounter(1295);
   const lineRef = useRef<SVGLineElement>(null);
   const lineInView = useInView(lineRef, { once: true, margin: "-100px" });
@@ -325,7 +351,10 @@ export default function LandingPage() {
   useEffect(() => {
     const savedLocale = localStorage.getItem("lang") as Locale | null;
     if (savedLocale) setLocale(savedLocale);
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 20);
+      setShowStickyCta(window.scrollY > 500);
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -361,15 +390,15 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020814] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#020814] text-white overflow-x-hidden" dir={isRtl ? "rtl" : "ltr"}>
 
       {/* NAVBAR */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 ${isRtl ? "left-0 right-0" : "left-0 right-0"} z-50 transition-all duration-300 ${
           scrolled ? "bg-[#020814]/80 backdrop-blur-xl border-b border-[#00D4AA]/20" : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className={`max-w-7xl mx-auto px-6 h-16 flex items-center ${isRtl ? "flex-row-reverse" : "justify-between"}`}>
           <Logo className="h-8 w-auto" />
           <div className="hidden md:flex items-center gap-4">
             <LocaleToggle locale={locale} onToggle={() => setLocale(isRtl ? "fr" : "ar")} />
@@ -380,6 +409,17 @@ export default function LandingPage() {
               Se connecter
             </a>
             <DemoButton locale={locale} />
+            {showStickyCta && (
+              <motion.a
+                href="/register/pharmacy"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="px-4 py-2 rounded-btn text-sm font-semibold bg-[#00D4AA] text-white hover:bg-[#009B7D] shadow-[0_4px_14px_rgba(0,212,170,0.3)] transition-all duration-200"
+              >
+                Inscrire ma pharmacie →
+              </motion.a>
+            )}
           </div>
           <button className="md:hidden w-9 h-9 flex items-center justify-center text-[#64748B]" onClick={() => setMobileMenu(!mobileMenu)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -453,7 +493,7 @@ export default function LandingPage() {
                     transition={{ delay: 0.5, duration: 0.5, ease: "easeOut" }}
                     className="block text-[#00D4AA]"
                   >
-                    {headline2}
+                    <TypewriterWord word={headline2} delay={0.7} />
                   </motion.span>
                 </motion.h1>
 
@@ -785,104 +825,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
-      <section className="relative py-24 bg-[#0A1628]">
-        <div className="max-w-6xl mx-auto px-6">
-          <Reveal>
-            <div className="text-center mb-16">
-              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">Témoignages</span>
-              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">Ils nous font confiance</h2>
-            </div>
-          </Reveal>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((item, i) => (
-              <Reveal key={item.name} delay={i * 0.1}>
-                <motion.div
-                  whileInView={{ opacity: 1, y: 0 }}
-                  initial={{ opacity: 0, y: 30 }}
-                  viewport={{ once: true, margin: "-80px" }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="bg-[#020814] border border-[#00D4AA]/20 rounded-card p-6 transition-all duration-300 hover:border-[#00D4AA]/50 hover:shadow-[0_8px_30px_rgba(0,212,170,0.15)]"
-                >
-                  <div className="flex gap-1 mb-3">
-                    {Array.from({ length: item.rating }).map((_, si) => <StarIcon key={si} />)}
-                  </div>
-                  <div className="opacity-30 mb-4"><QuoteIcon /></div>
-                  <p className="text-sm text-[#E2E8F0] leading-relaxed mb-5">"{item.text}"</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#00D4AA]/20 flex items-center justify-center text-xs font-bold text-[#00D4AA]">{item.initials}</div>
-                    <div>
-                      <div className="text-sm font-semibold text-white">{item.name}</div>
-                      <div className="text-xs text-[#64748B]">{item.pharmacy}, {item.city}</div>
-                    </div>
-                  </div>
-                </motion.div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* WHY PHARMAGO */}
-      <section className="relative py-24 bg-[#020814]">
-        <div className="max-w-6xl mx-auto px-6">
-          <Reveal>
-            <div className="text-center mb-16">
-              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">Pourquoi PharmaGo</span>
-              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">Du chaos à la confiance</h2>
-            </div>
-          </Reveal>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <Reveal>
-              <motion.div
-                whileInView={{ opacity: 1, x: 0 }}
-                initial={{ opacity: 0, x: -40 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.6 }}
-                className="bg-[#0A1628]/50 border border-red-500/20 rounded-card p-8"
-              >
-                <div className="text-red-400 text-xs font-semibold uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <span>✕</span> Avant PharmaGo
-                </div>
-                <ul className="space-y-3">
-                  {["Ordonnances perdues ou illisibles", "Livreurs non vérifiés, risqués", "Erreurs médicales parfois fatales", "Aucun suivi, zéro traçabilité", "Patients mécontents et inquiets"].map((item) => (
-                    <li key={item} className="flex items-center gap-3 text-sm text-[#E2E8F0]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            </Reveal>
-
-            <Reveal>
-              <motion.div
-                whileInView={{ opacity: 1, x: 0 }}
-                initial={{ opacity: 0, x: 40 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.6 }}
-                className="bg-[#0A1628]/50 border border-[#00D4AA]/30 rounded-card p-8"
-              >
-                <div className="text-[#00D4AA] text-xs font-semibold uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <span>✓</span> Avec PharmaGo
-                </div>
-                <ul className="space-y-3">
-                  {["Traçabilité complète de bout en bout", "Livreurs certifiés + OTP patient", "Zéro erreur médicale vérifiée", "Dashboard temps réel pharmacien", "Patients rassurés, pharmacies notées"].map((item) => (
-                    <li key={item} className="flex items-center gap-3 text-sm text-[#E2E8F0]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00D4AA] flex-shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* SECURITY */}
+{/* SECURITY */}
       <section className="relative py-24 bg-[#020814]">
         <div className="max-w-7xl mx-auto px-6">
           <Reveal>
@@ -963,7 +906,7 @@ export default function LandingPage() {
                       <span className="text-xs text-[#64748B]">/{t(locale, "pricing.period")}</span>
                     </div>
                   </div>
-                  <ul className="space-y-3 mb-6">
+                  <ul className="space-y-3 mb-4">
                     {(tier.plan === "starter" ? [1, 2, 3] : tier.plan === "pro" ? [1, 2, 3, 4] : [1, 2, 3, 4, 5]).map((n) => (
                       <li key={n} className="flex items-center gap-2 text-sm text-[#E2E8F0]">
                         <span className="w-1 h-1 rounded-full bg-[#00D4AA]" />
@@ -971,6 +914,15 @@ export default function LandingPage() {
                       </li>
                     ))}
                   </ul>
+                  <p className="text-xs text-[#64748B] mb-4">
+                    {tier.plan === "starter" ? "Idéal pour démarrer · 1 pharmacie" :
+                     tier.plan === "pro" ? "Le plus populaire · Livraisons illimitées" :
+                     "Pour les groupes · Multi-branches"}
+                  </p>
+                  <div className="flex items-center gap-1.5 text-xs text-[#00D4AA] mb-4">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    14 jours gratuits
+                  </div>
                 </motion.div>
               </Reveal>
             ))}
@@ -1095,18 +1047,55 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-[#00D4AA]/10 py-10 bg-[#020814]">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Logo className="h-6 w-auto" />
-            <span className="text-[11px] text-[#64748B]">{t(locale, "footer.tagline")}</span>
+      <footer className="border-t border-[#00D4AA]/10 py-12 bg-[#020814]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-3 gap-10 mb-10">
+            <div>
+              <Logo className="h-7 w-auto mb-3" />
+              <p className="text-[11px] text-[#64748B] mb-4">{t(locale, "footer.tagline")}</p>
+              <div className="flex items-center gap-3">
+                <a href="#" className="w-8 h-8 rounded-full bg-[#00D4AA]/10 flex items-center justify-center text-[#64748B] hover:text-[#00D4AA] transition-colors">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <a href="#" className="w-8 h-8 rounded-full bg-[#00D4AA]/10 flex items-center justify-center text-[#64748B] hover:text-[#00D4AA] transition-colors">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </a>
+                <a href="#" className="w-8 h-8 rounded-full bg-[#00D4AA]/10 flex items-center justify-center text-[#64748B] hover:text-[#00D4AA] transition-colors">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-white uppercase tracking-widest mb-3">Contact</h4>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs text-[#64748B]">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  +216 XX XXX XXX
+                </div>
+                <div className="flex items-center gap-2 text-xs text-[#64748B]">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  contact@pharmago.tn
+                </div>
+                <div className="flex items-center gap-2 text-xs text-[#64748B]">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  Tunis, Tunisie
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-white uppercase tracking-widest mb-3">Liens</h4>
+              <div className="flex items-center gap-6 text-xs text-[#64748B]">
+                <a href="/cgu" className="hover:text-white transition-colors">CGU</a>
+                <a href="/confidentialite" className="hover:text-white transition-colors">Confidentialité</a>
+                <a href="#" className="hover:text-white transition-colors">{t(locale, "footer.contact")}</a>
+              </div>
+              <p className="mt-4 text-[11px] text-[#64748B]" dangerouslySetInnerHTML={{ __html: t(locale, "footer.made") }} />
+            </div>
           </div>
-          <div className="flex items-center gap-6 text-xs text-[#64748B]">
-            <a href="#" className="hover:text-white transition-colors">{t(locale, "footer.privacy")}</a>
-            <a href="#" className="hover:text-white transition-colors">{t(locale, "footer.tos")}</a>
-            <a href="#" className="hover:text-white transition-colors">{t(locale, "footer.contact")}</a>
+          <div className="border-t border-[#00D4AA]/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
+            <span className="text-[11px] text-[#64748B]">© 2026 PharmaGo. Tous droits réservés.</span>
+            <span className="text-[11px] text-[#64748B]">PharmaGo v0.1 — Delivery secured</span>
           </div>
-          <span className="text-xs text-[#64748B]" dangerouslySetInnerHTML={{ __html: t(locale, "footer.made") }} />
         </div>
       </footer>
     </div>

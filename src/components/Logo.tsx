@@ -6,12 +6,13 @@ type LogoProps = {
 
 export default function Logo({ className }: LogoProps) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 360 60"
-      fill="none"
-      className={className}
-    >
+    <div dir="ltr">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 360 60"
+        fill="none"
+        className={className}
+      >
       <style>{`
         @keyframes pillPop {
           0% { transform: scale(0); opacity: 0; }
@@ -50,6 +51,7 @@ export default function Logo({ className }: LogoProps) {
         <path d="M 44 -4 Q 82 -4 88 16" stroke="#00D4AA" strokeWidth="3" fill="none" strokeLinecap="round"/>
         <path d="M 88 16 L 78 11 M 88 16 L 78 21" stroke="#00D4AA" strokeWidth="3" strokeLinecap="round" fill="none"/>
       </g>
-    </svg>
+      </svg>
+    </div>
   );
 }

@@ -148,6 +148,87 @@ const TruckIcon = (
   </svg>
 );
 
+const testimonials = [
+  { name: "Dr. Ahmed Mansour", pharmacy: "Pharmacie Centrale", city: "Tunis", initials: "AM", text: "Depuis PharmaGo, zéro erreur de livraison. Le suivi en temps réel a transformé notre service.", rating: 5 },
+  { name: "Pr. Sonia Bouaziz", pharmacy: "Pharmacie El Amal", city: "Sfax", initials: "SB", text: "Nos patients adorent le suivi en temps réel. Notre taux de satisfaction a grimpé de 40%.", rating: 5 },
+  { name: "Dr. Karim Trabelsi", pharmacy: "Pharmacie Ibn Sina", city: "Sousse", initials: "KT", text: "ROI positif dès le premier mois. L'équipe a adopté l'outil en moins d'une semaine.", rating: 5 },
+];
+const StarIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="#00D4AA" stroke="none">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+  </svg>
+);
+const QuoteIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
+    <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
+  </svg>
+);
+
+/* FAQ */
+const ChevronDownIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 12 15 18 9"/>
+  </svg>
+);
+
+const faqItems = [
+  { qKey: "faq.q1", aKey: "faq.a1" },
+  { qKey: "faq.q2", aKey: "faq.a2" },
+  { qKey: "faq.q3", aKey: "faq.a3" },
+  { qKey: "faq.q4", aKey: "faq.a4" },
+  { qKey: "faq.q5", aKey: "faq.a5" },
+];
+const PharmaciesIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+  </svg>
+);
+const ShieldCheckIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 12 15 16 10"/>
+  </svg>
+);
+
+function PharmacyCounter() {
+  const [count, setCount] = useState(12);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  useEffect(() => {
+    if (!inView) return;
+    const targets = [12, 27, 43, 58, 71, 82, 93, 101, 112];
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      setCount(targets[i] ?? 112);
+      if (i >= targets.length - 1) clearInterval(interval);
+    }, 200);
+    return () => clearInterval(interval);
+  }, [inView]);
+  return <span ref={ref} className="text-5xl font-bold text-[#00D4AA]">{count}</span>;
+}
+
+function FAQAccordion({ locale }: { locale: Locale }) {
+  const [open, setOpen] = useState<number | null>(null);
+  return (
+    <div className="space-y-3">
+      {faqItems.map((item, i) => (
+        <div key={i} className="bg-[#020814] border border-[#00D4AA]/20 rounded-lg overflow-hidden transition-all duration-300 hover:border-[#00D4AA]/40">
+          <button onClick={() => setOpen(open === i ? null : i)} className="w-full px-5 py-4 flex items-center justify-between text-left">
+            <span className="text-sm font-medium text-white pr-4">{t(locale, item.qKey)}</span>
+            <motion.div animate={{ rotate: open === i ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-[#00D4AA] flex-shrink-0">
+              <ChevronDownIcon />
+            </motion.div>
+          </button>
+          <motion.div initial={false} animate={{ height: open === i ? "auto" : 0, opacity: open === i ? 1 : 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
+            <p className="px-5 pb-4 text-sm text-[#E2E8F0] leading-relaxed">{t(locale, item.aKey)}</p>
+          </motion.div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const LockIcon = (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -605,6 +686,202 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* TESTIMONIALS */}
+      <section className="relative py-24 bg-[#0A1628]">
+        <div className="max-w-6xl mx-auto px-6">
+          <Reveal>
+            <div className="text-center mb-16">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">Témoignages</span>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">Ils nous font confiance</h2>
+            </div>
+          </Reveal>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((item, i) => (
+              <Reveal key={item.name} delay={i * 0.1}>
+                <motion.div
+                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className="bg-[#020814] border border-[#00D4AA]/20 rounded-card p-6 transition-all duration-300 hover:border-[#00D4AA]/50 hover:shadow-[0_8px_30px_rgba(0,212,170,0.15)]"
+                >
+                  <div className="flex gap-1 mb-3">
+                    {Array.from({ length: item.rating }).map((_, si) => <StarIcon key={si} />)}
+                  </div>
+                  <div className="opacity-30 mb-4"><QuoteIcon /></div>
+                  <p className="text-sm text-[#E2E8F0] leading-relaxed mb-5">"{item.text}"</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#00D4AA]/20 flex items-center justify-center text-xs font-bold text-[#00D4AA]">
+                      {item.initials}
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-white">{item.name}</div>
+                      <div className="text-xs text-[#64748B]">{item.pharmacy}, {item.city}</div>
+                    </div>
+                  </div>
+                </motion.div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* WHY PHARMAGO */}
+      <section className="relative py-24 bg-[#020814]">
+        <div className="max-w-6xl mx-auto px-6">
+          <Reveal>
+            <div className="text-center mb-16">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">Pourquoi PharmaGo</span>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">Du chaos à la confiance</h2>
+            </div>
+          </Reveal>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <Reveal>
+              <motion.div
+                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, x: -40 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.6 }}
+                className="bg-[#0A1628]/50 border border-red-500/20 rounded-card p-8"
+              >
+                <div className="text-red-400 text-xs font-semibold uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <span>✕</span> Avant PharmaGo
+                </div>
+                <ul className="space-y-3">
+                  {["Ordonnances perdues ou illisibles", "Livreurs non vérifiés, risqués", "Erreurs médicales parfois fatales", "Aucun suivi, zéro traçabilité", "Patients mécontents et inquiets"].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-sm text-[#E2E8F0]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            </Reveal>
+
+            <Reveal>
+              <motion.div
+                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, x: 40 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.6 }}
+                className="bg-[#0A1628]/50 border border-[#00D4AA]/30 rounded-card p-8"
+              >
+                <div className="text-[#00D4AA] text-xs font-semibold uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <span>✓</span> Avec PharmaGo
+                </div>
+                <ul className="space-y-3">
+                  {["Traçabilité complète de bout en bout", "Livreurs certifiés + OTP patient", "Zéro erreur médicale vérifiée", "Dashboard temps réel pharmacien", "Patients rassurés, pharmacies notées"].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-sm text-[#E2E8F0]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#00D4AA] flex-shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="relative py-24 bg-[#0A1628]">
+        <div className="max-w-6xl mx-auto px-6">
+          <Reveal>
+            <div className="text-center mb-16">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">Témoignages</span>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">Ils nous font confiance</h2>
+            </div>
+          </Reveal>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((item, i) => (
+              <Reveal key={item.name} delay={i * 0.1}>
+                <motion.div
+                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className="bg-[#020814] border border-[#00D4AA]/20 rounded-card p-6 transition-all duration-300 hover:border-[#00D4AA]/50 hover:shadow-[0_8px_30px_rgba(0,212,170,0.15)]"
+                >
+                  <div className="flex gap-1 mb-3">
+                    {Array.from({ length: item.rating }).map((_, si) => <StarIcon key={si} />)}
+                  </div>
+                  <div className="opacity-30 mb-4"><QuoteIcon /></div>
+                  <p className="text-sm text-[#E2E8F0] leading-relaxed mb-5">"{item.text}"</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#00D4AA]/20 flex items-center justify-center text-xs font-bold text-[#00D4AA]">{item.initials}</div>
+                    <div>
+                      <div className="text-sm font-semibold text-white">{item.name}</div>
+                      <div className="text-xs text-[#64748B]">{item.pharmacy}, {item.city}</div>
+                    </div>
+                  </div>
+                </motion.div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* WHY PHARMAGO */}
+      <section className="relative py-24 bg-[#020814]">
+        <div className="max-w-6xl mx-auto px-6">
+          <Reveal>
+            <div className="text-center mb-16">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">Pourquoi PharmaGo</span>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">Du chaos à la confiance</h2>
+            </div>
+          </Reveal>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <Reveal>
+              <motion.div
+                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, x: -40 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.6 }}
+                className="bg-[#0A1628]/50 border border-red-500/20 rounded-card p-8"
+              >
+                <div className="text-red-400 text-xs font-semibold uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <span>✕</span> Avant PharmaGo
+                </div>
+                <ul className="space-y-3">
+                  {["Ordonnances perdues ou illisibles", "Livreurs non vérifiés, risqués", "Erreurs médicales parfois fatales", "Aucun suivi, zéro traçabilité", "Patients mécontents et inquiets"].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-sm text-[#E2E8F0]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            </Reveal>
+
+            <Reveal>
+              <motion.div
+                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, x: 40 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.6 }}
+                className="bg-[#0A1628]/50 border border-[#00D4AA]/30 rounded-card p-8"
+              >
+                <div className="text-[#00D4AA] text-xs font-semibold uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <span>✓</span> Avec PharmaGo
+                </div>
+                <ul className="space-y-3">
+                  {["Traçabilité complète de bout en bout", "Livreurs certifiés + OTP patient", "Zéro erreur médicale vérifiée", "Dashboard temps réel pharmacien", "Patients rassurés, pharmacies notées"].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-sm text-[#E2E8F0]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#00D4AA] flex-shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
       {/* SECURITY */}
       <section className="relative py-24 bg-[#020814]">
         <div className="max-w-7xl mx-auto px-6">
@@ -765,6 +1042,53 @@ export default function LandingPage() {
                   <p className="text-sm text-[#E2E8F0]">{t(locale, "demo.success.sub")}</p>
                 </motion.div>
               )}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="relative py-24 bg-[#0A1628]">
+        <div className="max-w-3xl mx-auto px-6">
+          <Reveal>
+            <div className="text-center mb-16">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">FAQ</span>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">Questions fréquentes</h2>
+            </div>
+          </Reveal>
+          <Reveal>
+            <FAQAccordion locale={locale} />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="relative py-24 bg-[#020814]">
+        <div className="max-w-2xl mx-auto px-6 text-center">
+          <Reveal>
+            <div className="mb-6 flex items-center justify-center gap-2 text-[#00D4AA]">
+              <PharmaciesIcon />
+              <span className="text-sm font-medium">Pharmacies actives ce mois</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-white mb-4">
+              Rejoignez les pharmacies qui modernisent leurs livraisons
+            </h2>
+            <p className="text-base text-[#64748B] mb-10">
+              Conçu pour le secteur médical tunisien — sécurité, confiance, traçabilité.
+            </p>
+            <div className="mb-8">
+              <PharmacyCounter />
+            </div>
+            <MagneticButton
+              onClick={() => window.location.href = "/register/pharmacy"}
+              className="inline-flex px-10 py-4 rounded-btn text-base font-semibold bg-[#00D4AA] text-white hover:bg-[#059669] transition-all duration-200 active:scale-[0.96] shadow-[0_4px_20px_rgba(0,212,170,0.4)]"
+            >
+              Commencer gratuitement →
+            </MagneticButton>
+            <div className="mt-4 flex items-center justify-center gap-4 text-xs text-[#64748B]">
+              <span className="flex items-center gap-1.5"><ShieldCheckIcon /> Sans engagement</span>
+              <span className="flex items-center gap-1.5"><ShieldCheckIcon /> 14 jours gratuits</span>
+              <span className="flex items-center gap-1.5"><ShieldCheckIcon /> Support inclus</span>
             </div>
           </Reveal>
         </div>

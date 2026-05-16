@@ -34,14 +34,14 @@ async function handleRequest(request: NextRequest): Promise<NextResponse> {
     if (token) response.cookies.set("pharmago_token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "none",
       path: "/",
       maxAge: 30 * 60,
     });
     if (refreshToken) response.cookies.set("pharmago_refresh", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "none",
       path: "/",
       maxAge: 7 * 24 * 60 * 60,
     });

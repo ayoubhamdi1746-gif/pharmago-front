@@ -12,14 +12,14 @@ export async function setTokens(access: string, refresh: string) {
   cookieStore.set(COOKIE_NAME, access, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "none",
     path: "/",
     maxAge: 30 * 60,
   });
   cookieStore.set(COOKIE_REFRESH, refresh, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "none",
     path: "/",
     maxAge: 7 * 24 * 60 * 60,
   });

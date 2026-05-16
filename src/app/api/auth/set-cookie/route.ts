@@ -13,18 +13,18 @@ export async function POST(request: NextRequest) {
     response.cookies.set("pharmago_token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "none",
       path: "/",
-      maxAge: 30 * 60,
+      maxAge: 86400,
     });
 
     if (refresh_token) {
       response.cookies.set("pharmago_refresh", refresh_token, {
         httpOnly: true,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
         path: "/",
-        maxAge: 7 * 24 * 60 * 60,
+        maxAge: 86400 * 7,
       });
     }
 

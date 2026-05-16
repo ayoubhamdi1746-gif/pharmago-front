@@ -45,6 +45,12 @@ export default function LoginPage() {
     try {
       const { data } = await api.post("/auth/login", { username, password });
       const { setTokens, getUserFromToken } = await import("@/lib/auth");
+      await fetch("/api/auth/set-cookie", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: data.access_token, refresh_token: data.refresh_token }),
+        credentials: "include",
+      });
       await setTokens(data.access_token, data.refresh_token);
       const user = await getUserFromToken();
       if (user) {

@@ -18,6 +18,7 @@ export default function AdminPharmaciesPage() {
   const [search, setSearch] = useState("");
   const [planFilter, setPlanFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [cityFilter, setCityFilter] = useState("");
   const [suspendTarget, setSuspendTarget] = useState<PharmacyAdminRow | null>(null);
   const [detailTarget, setDetailTarget] = useState<PharmacyAdminRow | null>(null);
   const queryClient = useQueryClient();
@@ -67,6 +68,7 @@ export default function AdminPharmaciesPage() {
     if (planFilter && p.plan !== planFilter) return false;
     if (statusFilter === "active" && !p.is_active) return false;
     if (statusFilter === "inactive" && p.is_active) return false;
+    if (cityFilter && p.city !== cityFilter) return false;
     return true;
   });
 
@@ -110,6 +112,30 @@ export default function AdminPharmaciesPage() {
             <option value="active">{t(locale, "admin.status.active")}</option>
             <option value="inactive">{t(locale, "admin.status.inactive")}</option>
           </select>
+          <select
+            value={cityFilter}
+            onChange={(e) => setCityFilter(e.target.value)}
+            className="px-4 py-2 border border-[#00D4AA]/20 bg-[#0D1E32] text-white rounded-btn text-sm focus:outline-none focus:border-[#00D4AA]"
+          >
+            <option value="">Toutes les villes</option>
+            {[...new Set((pharmacies ?? []).map(p => p.city).filter(Boolean) as string[])].sort().map(city => (
+              <option key={city} value={city}>{city}</option>
+            ))}
+          </select>
+          <button
+            onClick={() => {
+              const headers = ["Nom", "Ville", "Plan", "Livraisons", "Revenu", "Statut"];
+              const rows = filtered.map(p => [p.pharmacy_name, p.city || "", p.plan, p.delivery_count_this_month, p.total_delivery_earnings.toFixed(2), p.is_active ? "Actif" : "Inactif"]);
+              const csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
+              const blob = new Blob([csv], { type: "text/csv" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a"); a.href = url; a.download = "pharmacies.csv"; a.click();
+              URL.revokeObjectURL(url);
+            }}
+            className="px-4 py-2 border border-[#00D4AA]/20 bg-[#0D1E32] text-[#00D4AA] rounded-btn text-sm hover:bg-[#00D4AA]/10 transition-colors"
+          >
+            Export CSV
+          </button>
         </div>
 
         {isLoading ? (
@@ -134,7 +160,7 @@ export default function AdminPharmaciesPage() {
                 </thead>
                 <tbody>
                   {filtered.map((p) => (
-                    <tr key={p.id} className="border-b border-[#00D4AA]/10 hover:bg-[#00D4AA]/5">
+                    <tr key={p.id} className="border-b border-[#00D4AA]/10 hover:bg-[#00D4AA]/5 cursor-pointer" onClick={() => setDetailTarget(p)}>
                       <td className="p-3 pr-4 font-medium text-white">{p.pharmacy_name}</td>
                       <td className="p-3 pr-4 text-gray-400">{p.city || "—"}</td>
                       <td className="p-3 pr-4">

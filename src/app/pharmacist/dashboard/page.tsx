@@ -231,7 +231,29 @@ export default function PharmacistDashboard() {
         animate="visible"
         className="max-w-5xl mx-auto space-y-6"
       >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <motion.div variants={staggerItem}>
+          <div className="bg-[#0A1628]/80 border border-[#00D4AA]/20 rounded-card p-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-white mb-1">Bonjour, PharmaGo Pharmacie 👋</h2>
+              <p className="text-sm text-gray-400">{new Date().toLocaleDateString("fr-TN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+              <div className="flex items-center gap-6 mt-4">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#E69E3E] animate-pulse" />
+                  <span className="text-sm text-gray-400"><span className="text-white font-semibold">{highRiskCount}</span> ordonnances en attente</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#00D4AA]" />
+                  <span className="text-sm text-gray-400"><span className="text-white font-semibold">{verifiedCount}</span> validées</span>
+                </div>
+              </div>
+            </div>
+            <a href="#queue" className="px-5 py-2.5 rounded-btn text-sm font-medium bg-[#00D4AA]/10 text-[#00D4AA] border border-[#00D4AA]/30 hover:bg-[#00D4AA]/20 transition-all duration-200 flex items-center gap-2">
+              Voir la file d'attente →
+            </a>
+          </div>
+        </motion.div>
+
+        <div id="queue" className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard label={t(locale, "pharmacist.stats.total")} value={totalPrescriptions} icon={<QueueIcon />} />
           <StatCard
             label={t(locale, "pharmacist.stats.highRisk")}
@@ -372,15 +394,15 @@ export default function PharmacistDashboard() {
               );
             })}
             {filtered.length === 0 && (
-              <motion.div variants={staggerItem} className="text-center py-12">
-                <svg className="w-24 h-24 mx-auto mb-4 text-[#00D4AA]/30" fill="none" viewBox="0 0 64 64" stroke="currentColor" strokeWidth="1">
-                  <rect x="12" y="8" width="40" height="48" rx="4" stroke="currentColor" fill="none" />
-                  <path d="M20 18h24M20 26h16M20 34h24M20 42h12" stroke="currentColor" strokeLinecap="round" />
-                  <circle cx="48" cy="44" r="8" stroke="currentColor" fill="none" />
-                  <path d="M48 40v8M44 44h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <motion.div variants={staggerItem} className="text-center py-16 bg-[#0A1628]/80 rounded-card border border-[#00D4AA]/20">
+                <svg className="w-20 h-20 mx-auto mb-5 text-[#00D4AA]/30" fill="none" viewBox="0 0 80 80" stroke="currentColor" strokeWidth="1.2">
+                  <rect x="16" y="10" width="48" height="60" rx="5" stroke="currentColor" fill="none" />
+                  <path d="M26 24h28M26 34h20M26 44h28M26 54h14" stroke="currentColor" strokeLinecap="round" />
+                  <circle cx="55" cy="56" r="12" stroke="currentColor" fill="none" />
+                  <path d="M55 50v12M49 56h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
-                <h3 className="text-lg font-medium text-white mb-2">{t(locale, "pharmacist.queue.title")}</h3>
-                <p className="text-sm text-gray-400">{t(locale, "pharmacist.queue.empty")}</p>
+                <h3 className="text-lg font-medium text-white mb-2">Aucune ordonnance en attente 🎉</h3>
+                <p className="text-sm text-gray-400">Votre file d'attente est vide pour le moment.</p>
               </motion.div>
             )}
           </motion.div>

@@ -2,20 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import type { Role } from "@/lib/types";
-import { t } from "@/lib/i18n";
-import { useLocale } from "@/lib/useLocale";
 
 export default function Topbar({ role }: { role: Role }) {
   const router = useRouter();
-  const { locale, toggleLocale } = useLocale();
-  const [scrolled, setScrolled] = useState(false);
+  const [now, setNow] = useState("");
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const update = () => {
+      const d = new Date();
+      setNow(d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) + " · " + d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }));
+    };
+    update();
+    const interval = setInterval(update, 60000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogout = async () => {
@@ -26,35 +26,25 @@ export default function Topbar({ role }: { role: Role }) {
 
   return (
     <header
-      className={`h-16 sticky top-0 z-40 flex items-center justify-between px-6 transition-all duration-300 bg-[#0A1628]/90 backdrop-blur-xl border-b border-[#00D4AA]/10 ${
-        scrolled ? "shadow-[0_4px_20px_rgba(0,212,170,0.08)]" : ""
-      }`}
+      className="h-14 flex items-center justify-between px-6 sticky top-0 z-40"
+      style={{ background: "#020814", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
     >
       <div className="flex items-center gap-3">
-        <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#00D4AA]/10 text-[#00D4AA]">
-          {role.charAt(0).toUpperCase() + role.slice(1)}
-        </span>
+        <div className="px-3 py-1 rounded-full text-xs font-semibold"
+          style={{ background: "rgba(0, 201, 167, 0.1)", color: "#00C9A7", border: "1px solid rgba(0, 201, 167, 0.2)" }}>
+          {role.replace("_", " ").toUpperCase()}
+        </div>
+        <span className="text-white/30 text-xs">{now}</span>
       </div>
 
       <div className="flex items-center gap-2">
-        <button
-          onClick={toggleLocale}
-          className="relative w-14 h-7 rounded-full bg-[#0D1E32] border border-[#00D4AA]/20 transition-all duration-200 hover:border-[#00D4AA]"
-        >
-          <motion.span
-            className="absolute top-0.5 w-6 h-6 rounded-full bg-[#00D4AA] flex items-center justify-center text-[10px] font-semibold text-white"
-            animate={{ left: locale === "ar" ? "calc(100% - 26px)" : "2px" }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          >
-            {locale === "ar" ? "AR" : "FR"}
-          </motion.span>
-        </button>
-
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 rounded-btn text-sm font-medium text-gray-400 hover:text-[#00D4AA] hover:bg-[#00D4AA]/10 transition-all duration-200"
-        >
-          {t(locale, "nav.logout")}
+        <button onClick={handleLogout}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white/40 hover:text-red-400 transition-all"
+          style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Déconnexion
         </button>
       </div>
     </header>

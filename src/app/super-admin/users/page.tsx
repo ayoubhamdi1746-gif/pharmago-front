@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import RoleGuard from "@/components/RoleGuard";
+import { Download } from "lucide-react";
 import NeoButton from "@/components/ui/NeoButton";
 import Modal from "@/components/Modal";
 import api from "@/lib/api";
@@ -38,6 +39,20 @@ interface UsersData {
 }
 
 const VALID_ROLES = ["patient", "pharmacist", "doctor", "driver", "admin", "super_admin"];
+
+function exportUsersCSV(users: UserRow[]) {
+  const headers = ["Username", "Email", "Role", "Actif", "Date création"];
+  const rows = users.map(u => [
+    u.username, u.email ?? "", u.role, u.is_active ? "Oui" : "Non",
+    u.created_at ? new Date(u.created_at).toLocaleDateString("fr-FR") : "N/A",
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "utilisateurs.csv"; a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function SuperAdminUsers() {
   const queryClient = useQueryClient();
@@ -105,8 +120,22 @@ export default function SuperAdminUsers() {
         className="max-w-6xl mx-auto space-y-6"
       >
         <motion.div variants={item}>
-          <h1 className="text-2xl font-semibold text-white">Gestion des utilisateurs</h1>
-          <p className="text-sm text-gray-500">{data?.total ?? 0} utilisateurs au total</p>
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h1 className="text-2xl font-semibold text-white">Gestion des utilisateurs</h1>
+              <p className="text-sm text-gray-500">{data?.total ?? 0} utilisateurs au total</p>
+            </div>
+            {data?.users && (
+              <button
+                onClick={() => exportUsersCSV(data.users)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white transition-all hover:opacity-90"
+                style={{ background: "rgba(0,201,167,0.1)", border: "1px solid rgba(0,201,167,0.3)", color: "#00C9A7" }}
+              >
+                <Download size={14} />
+                Export CSV
+              </button>
+            )}
+          </div>
         </motion.div>
 
         {isLoading ? (

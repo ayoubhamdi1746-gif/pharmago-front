@@ -47,12 +47,12 @@ const navKeys: Record<Role, { href: string; key: string; icon?: React.ComponentT
     { href: "/admin/payouts", key: "sidebar.payouts", icon: DollarSign },
   ],
   super_admin: [
-    { href: "/super-admin/dashboard", key: "sidebar.super_admin.overview" },
-    { href: "/super-admin/users", key: "sidebar.super_admin.users" },
-    { href: "/super-admin/demo-requests", key: "sidebar.super_admin.demo_requests" },
-    { href: "/admin/onboarding", key: "sidebar.onboarding" },
-    { href: "/admin/pharmacies", key: "sidebar.pharmacies" },
-    { href: "/admin/payouts", key: "sidebar.payouts" },
+    { href: "/super-admin/dashboard", key: "sidebar.super_admin.overview", icon: LayoutDashboard },
+    { href: "/super-admin/users", key: "sidebar.super_admin.users", icon: Users },
+    { href: "/super-admin/demo-requests", key: "sidebar.super_admin.demo_requests", icon: Shield },
+    { href: "/super-admin/pharmacies", key: "sidebar.pharmacies", icon: Building2 },
+    { href: "/super-admin/new-pharmacy", key: "sidebar.onboarding", icon: PackagePlus },
+    { href: "/super-admin/driver-payments", key: "sidebar.payouts", icon: DollarSign },
   ],
 };
 

@@ -38,10 +38,10 @@ export default function Logo({ className }: LogoProps) {
         .w-a { animation: arrowPop 0.4s ease-out 0.1s forwards; opacity: 0; transform-origin: 22px 6px; }
       `}</style>
       <g className="t-a">
-        <text x="110" y="34" fontFamily="Inter,system-ui,sans-serif" fontSize="22" fontWeight="700" letterSpacing="1.2" fill="currentColor">PHARMA<tspan fill="#00D4AA">&#183;</tspan>GO</text>
+        <text x="110" y="34" fontFamily="Inter,system-ui,sans-serif" fontSize="22" fontWeight="700" letterSpacing="1.2" fill="#FFFFFF">PHARMA<tspan fill="#00D4AA">&#183;</tspan>GO</text>
       </g>
       <g className="s-a">
-        <text x="110" y="54" fontFamily="Inter,system-ui,sans-serif" fontSize="10" fontWeight="500" letterSpacing="1.2" fill="currentColor" opacity="0.6">PHARMACEUTICAL DELIVERY SECURED</text>
+        <text x="110" y="54" fontFamily="Inter,system-ui,sans-serif" fontSize="10" fontWeight="500" letterSpacing="1.2" fill="rgba(255,255,255,0.6)">PHARMACEUTICAL DELIVERY SECURED</text>
       </g>
       <g className="p-a">
         <path d="M 44 6 L 32 6 A 24 24 0 0 0 8 30 A 24 24 0 0 0 32 54 L 44 54 Z" fill="#00D4AA"/>

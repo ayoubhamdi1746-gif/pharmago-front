@@ -46,13 +46,13 @@ function MetricCard({ label, value, format, icon, color, bg }: MetricCard) {
   const display = format === "currency" ? `${value.toLocaleString()} TND` : value.toLocaleString();
   return (
     <motion.div variants={item}>
-      <GlassCard intensity="light" glow="green" hover={true} className="bg-[#0A1628]/80">
+      <GlassCard intensity="light" glow="green" hover={true} className="bg-[rgba(255,255,255,0.05)] border border-[rgba(0,201,167,0.2)] backdrop-blur-[10px]">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs text-gray-400 mb-1">{label}</p>
-            <p className="text-3xl font-bold text-white">{display}</p>
+            <p className="text-sm font-bold text-white text-4xl">{display}</p>
+            <p className="text-xs text-gray-400 mt-1 font-medium">{label}</p>
           </div>
-          <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center`}>
+          <div className={`w-11 h-11 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
             {icon}
           </div>
         </div>

@@ -212,6 +212,33 @@ export default function LoginPage() {
             </motion.div>
             <span className="text-sm text-white/60">{t(locale, "login.trust")}</span>
           </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+            className="mt-10 space-y-3"
+          >
+            {[
+              { value: "1 295+", label: "Ordonnances sécurisées", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg> },
+              { value: "98%", label: "Satisfaction client", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> },
+              { value: "24h", label: "Installation complète", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.9 + i * 0.1 }}
+                className="flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-card px-4 py-3"
+              >
+                <div className="text-[#00D4AA]">{stat.icon}</div>
+                <div>
+                  <p className="text-lg font-bold text-white">{stat.value}</p>
+                  <p className="text-[10px] text-white/50">{stat.label}</p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </div>
 
@@ -247,7 +274,7 @@ export default function LoginPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-card shadow-[0_25px_50px_rgba(0,201,167,0.1)] p-8"
+            className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-card shadow-[0_25px_50px_rgba(0,201,167,0.15),0_8px_20px_rgba(0,0,0,0.1)] p-8"
           >
             <div className="hidden lg:flex justify-center mb-8">
               <motion.div
@@ -379,6 +406,12 @@ export default function LoginPage() {
                   )}
                 </span>
               </MagneticButton>
+
+              <div className="flex justify-center">
+                <button type="button" className="text-xs text-[#00D4AA]/70 hover:text-[#00D4AA] transition-colors duration-200 underline-offset-2 hover:underline">
+                  Mot de passe oublié ?
+                </button>
+              </div>
             </form>
           </motion.div>
 

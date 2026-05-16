@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
+import { motion, useMotionValue, useSpring, useInView, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/motion";
+import api from "@/lib/api";
 import MagneticButton from "@/components/MagneticButton";
 import { t, type Locale } from "@/lib/i18n";
 import Logo from "@/components/Logo";
@@ -175,7 +176,95 @@ const testimonials = [
   { name: "Dr. Ahmed Mansour", pharmacy: "Pharmacie Centrale", city: "Tunis", initials: "AM", text: "Depuis PharmaGo, zéro erreur de livraison. Le suivi en temps réel a transformé notre service.", rating: 5 },
   { name: "Pr. Sonia Bouaziz", pharmacy: "Pharmacie El Amal", city: "Sfax", initials: "SB", text: "Nos patients adorent le suivi en temps réel. Notre taux de satisfaction a grimpé de 40%.", rating: 5 },
   { name: "Dr. Karim Trabelsi", pharmacy: "Pharmacie Ibn Sina", city: "Sousse", initials: "KT", text: "ROI positif dès le premier mois. L'équipe a adopté l'outil en moins d'une semaine.", rating: 5 },
+  { name: "Dr. Nadia Mehdi", pharmacy: "Pharmacie Nour", city: "Ariana", initials: "NM", text: "La gestion des ordonnances contrôlées est maintenant un jeu d'enfant. PharmaGo nous fait gagner 2h par jour.", rating: 5 },
+  { name: "Pr. Youssef Gharbi", pharmacy: "Pharmacie Essalam", city: "Bizerte", initials: "YG", text: "Interface intuitive, support réactif. Je recommande PharmaGo à chaque pharmacien tunisien.", rating: 5 },
 ];
+
+function NewsletterForm() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setLoading(true);
+    try {
+      await api.post("/public/newsletter", { email });
+      setDone(true);
+      window.dispatchEvent(new CustomEvent("toast", { detail: { type: "success", message: "Inscrit avec succès !" } }));
+    } catch {
+      window.dispatchEvent(new CustomEvent("toast", { detail: { type: "error", message: "Erreur, réessayez" } }));
+    } finally {
+      setLoading(false);
+    }
+  };
+  return done ? (
+    <p className="text-xs text-[#00C9A7]">Merci pour votre inscription !</p>
+  ) : (
+    <form onSubmit={handleSubmit} className="flex gap-2">
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="votre@email.com"
+        required
+        className="flex-1 px-3 py-2 rounded-lg bg-[#0A1628] border border-[#00D4AA]/20 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-[#00D4AA] transition-colors"
+      />
+      <button type="submit" disabled={loading}
+        className="px-4 py-2 rounded-lg bg-[#00D4AA] text-white text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50">
+        {loading ? "..." : "S'abonner"}
+      </button>
+    </form>
+  );
+}
+
+function TestimonialCarousel() {
+  const [current, setCurrent] = useState(0);
+  const [autoplay, setAutoplay] = useState(true);
+
+  useEffect(() => {
+    if (!autoplay) return;
+    const interval = setInterval(() => setCurrent((c) => (c + 1) % testimonials.length), 4000);
+    return () => clearInterval(interval);
+  }, [autoplay]);
+
+  return (
+    <div className="relative max-w-2xl mx-auto" onMouseEnter={() => setAutoplay(false)} onMouseLeave={() => setAutoplay(true)}>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.4 }}
+          className="bg-[#020814] border border-[#00D4AA]/20 rounded-2xl p-8 text-center"
+        >
+          <div className="flex gap-1 mb-4 justify-center">
+            {Array.from({ length: testimonials[current].rating }).map((_, si) => <StarIcon key={si} />)}
+          </div>
+          <div className="opacity-20 mb-4 flex justify-center"><QuoteIcon /></div>
+          <p className="text-base text-[#E2E8F0] leading-relaxed mb-6">"{testimonials[current].text}"</p>
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#00D4AA]/20 flex items-center justify-center text-xs font-bold text-[#00D4AA]">
+              {testimonials[current].initials}
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-white">{testimonials[current].name}</div>
+              <div className="text-xs text-[#64748B]">{testimonials[current].pharmacy}, {testimonials[current].city}</div>
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+      <div className="flex items-center justify-center gap-2 mt-6">
+        {testimonials.map((_, i) => (
+          <button key={i} onClick={() => { setCurrent(i); setAutoplay(false); }}
+            className="w-2 h-2 rounded-full transition-all duration-300"
+            style={{ background: i === current ? "#00C9A7" : "rgba(255,255,255,0.2)", width: i === current ? "24px" : "8px" }} />
+        ))}
+      </div>
+    </div>
+  );
+}
 const StarIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="#00D4AA" stroke="none">
     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -339,6 +428,7 @@ export default function LandingPage() {
   const [locale, setLocale] = useState<Locale>("fr");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showStickyCta, setShowStickyCta] = useState(false);
+  const [isAnnual, setIsAnnual] = useState(false);
   const secureCount = useLiveCounter(1295);
   const lineRef = useRef<SVGLineElement>(null);
   const lineInView = useInView(lineRef, { once: true, margin: "-100px" });
@@ -764,6 +854,12 @@ export default function LandingPage() {
               </Reveal>
             ))}
           </div>
+          <Reveal delay={0.4}>
+            <div className="mt-16">
+              <p className="text-center text-xs text-white/30 uppercase tracking-widest mb-8">Ce qu&apos;ils disent de nous</p>
+              <TestimonialCarousel />
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -867,65 +963,96 @@ export default function LandingPage() {
       <section id="pricing" className="relative py-24 bg-[#0D1E32]">
         <div className="max-w-6xl mx-auto px-6">
           <Reveal>
-            <div className="text-center mb-16">
+            <div className="text-center mb-8">
               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#00D4AA]">{t(locale, "section.tarifs")}</span>
               <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mt-3 text-white">{t(locale, "section.tarifs.title")}</h2>
             </div>
           </Reveal>
 
+          <Reveal>
+            <div className="flex items-center justify-center gap-3 mb-12">
+              <span className="text-sm text-white/50">Mensuel</span>
+              <button
+                onClick={() => setIsAnnual(!isAnnual)}
+                className="relative w-14 h-7 rounded-full bg-[#0A1628] border border-[#00D4AA]/30 transition-all"
+              >
+                <motion.span
+                  className="absolute top-0.5 w-6 h-6 rounded-full bg-[#00D4AA] flex items-center justify-center"
+                  animate={{ left: isAnnual ? "calc(100% - 26px)" : "2px" }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                />
+              </button>
+              <span className="text-sm text-white/50">Annuel</span>
+              <span className="text-xs px-2 py-1 rounded-full bg-[#00D4AA]/20 text-[#00D4AA] font-medium border border-[#00D4AA]/30">-2 mois</span>
+            </div>
+          </Reveal>
+
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { plan: "starter", price: 200, popular: false },
-              { plan: "pro", price: 450, popular: true },
-              { plan: "enterprise", price: 900, popular: false },
-            ].map((tier, i) => (
-              <Reveal key={tier.plan} delay={i * 0.1}>
-                <motion.div
-                  whileInView={{ opacity: 1, y: 0 }}
-                  initial={{ opacity: 0, y: 30 }}
-                  viewport={{ once: true, margin: "-80px" }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className={`relative bg-[#0A1628] border rounded-card p-6 transition-all duration-300 ${
-                    tier.popular
-                      ? "border-[#00D4AA] shadow-[0_8px_30px_rgba(0,212,170,0.25)] scale-105"
-                      : "border-[#00D4AA]/20 shadow-[0_4px_20px_rgba(0,212,170,0.1)] hover:border-[#00D4AA]/50 hover:shadow-[0_8px_30px_rgba(0,212,170,0.2)]"
-                  }`}
-                >
-                  {tier.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-[#00D4AA] text-white text-[10px] font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
-                        {t(locale, "pricing.popular")}
-                      </span>
+              { plan: "starter", popular: false },
+              { plan: "pro", popular: true },
+              { plan: "enterprise", popular: false },
+            ].map((tier, i) => {
+              const monthlyPrice = tier.plan === "starter" ? 200 : tier.plan === "pro" ? 450 : 900;
+              const annualPrice = Math.round(monthlyPrice * 10);
+              const displayPrice = isAnnual ? annualPrice : monthlyPrice;
+              return (
+                <Reveal key={tier.plan} delay={i * 0.1}>
+                  <motion.div
+                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, y: 30 }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    className={`relative bg-[#0A1628] border rounded-card p-6 transition-all duration-300 ${
+                      tier.popular
+                        ? "border-[#00D4AA] shadow-[0_8px_30px_rgba(0,212,170,0.25)] scale-105"
+                        : "border-[#00D4AA]/20 shadow-[0_4px_20px_rgba(0,212,170,0.1)] hover:border-[#00D4AA]/50 hover:shadow-[0_8px_30px_rgba(0,212,170,0.2)]"
+                    }`}
+                  >
+                    {tier.popular && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                        <span className="bg-[#00D4AA] text-white text-[10px] font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                          {t(locale, "pricing.popular")}
+                        </span>
+                      </div>
+                    )}
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg font-semibold text-white mb-2">{t(locale, `pricing.${tier.plan}.title`)}</h3>
+                      <div className="flex items-baseline justify-center gap-1">
+                        <motion.span
+                          key={displayPrice}
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="text-4xl font-bold text-white"
+                        >
+                          {displayPrice}
+                        </motion.span>
+                        <span className="text-sm text-[#64748B]">TND</span>
+                        <span className="text-xs text-[#64748B]">/{isAnnual ? "an" : t(locale, "pricing.period")}</span>
+                      </div>
+                      {isAnnual && <p className="text-xs text-[#00C9A7] mt-1">Économisez 2 mois</p>}
                     </div>
-                  )}
-                  <div className="text-center mb-6">
-                    <h3 className="text-lg font-semibold text-white mb-2">{t(locale, `pricing.${tier.plan}.title`)}</h3>
-                    <div className="flex items-baseline justify-center gap-1">
-                      <span className="text-4xl font-bold text-white">{tier.price}</span>
-                      <span className="text-sm text-[#64748B]">TND</span>
-                      <span className="text-xs text-[#64748B]">/{t(locale, "pricing.period")}</span>
+                    <ul className="space-y-3 mb-4">
+                      {(tier.plan === "starter" ? [1, 2, 3] : tier.plan === "pro" ? [1, 2, 3, 4] : [1, 2, 3, 4, 5]).map((n) => (
+                        <li key={n} className="flex items-center gap-2 text-sm text-[#E2E8F0]">
+                          <span className="w-1 h-1 rounded-full bg-[#00D4AA]" />
+                          {t(locale, `pricing.${tier.plan}.feature${n}`)}
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="text-xs text-[#64748B] mb-4">
+                      {tier.plan === "starter" ? "Idéal pour démarrer · 1 pharmacie" :
+                       tier.plan === "pro" ? "Le plus populaire · Livraisons illimitées" :
+                       "Pour les groupes · Multi-branches"}
+                    </p>
+                    <div className="flex items-center gap-1.5 text-xs text-[#00D4AA] mb-4">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      14 jours gratuits
                     </div>
-                  </div>
-                  <ul className="space-y-3 mb-4">
-                    {(tier.plan === "starter" ? [1, 2, 3] : tier.plan === "pro" ? [1, 2, 3, 4] : [1, 2, 3, 4, 5]).map((n) => (
-                      <li key={n} className="flex items-center gap-2 text-sm text-[#E2E8F0]">
-                        <span className="w-1 h-1 rounded-full bg-[#00D4AA]" />
-                        {t(locale, `pricing.${tier.plan}.feature${n}`)}
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="text-xs text-[#64748B] mb-4">
-                    {tier.plan === "starter" ? "Idéal pour démarrer · 1 pharmacie" :
-                     tier.plan === "pro" ? "Le plus populaire · Livraisons illimitées" :
-                     "Pour les groupes · Multi-branches"}
-                  </p>
-                  <div className="flex items-center gap-1.5 text-xs text-[#00D4AA] mb-4">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    14 jours gratuits
-                  </div>
-                </motion.div>
-              </Reveal>
-            ))}
+                  </motion.div>
+                </Reveal>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -1083,11 +1210,14 @@ export default function LandingPage() {
               </div>
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-white uppercase tracking-widest mb-3">Liens</h4>
+              <h4 className="text-xs font-semibold text-white uppercase tracking-widest mb-3">Restez informé</h4>
               <div className="flex items-center gap-6 text-xs text-[#64748B]">
                 <a href="/cgu" className="hover:text-white transition-colors">CGU</a>
                 <a href="/confidentialite" className="hover:text-white transition-colors">Confidentialité</a>
                 <a href="#" className="hover:text-white transition-colors">{t(locale, "footer.contact")}</a>
+              </div>
+              <div className="mt-4">
+                <NewsletterForm />
               </div>
               <p className="mt-4 text-[11px] text-[#64748B]" dangerouslySetInnerHTML={{ __html: t(locale, "footer.made") }} />
             </div>

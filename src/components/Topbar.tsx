@@ -2,11 +2,28 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Sun, Moon, LogOut } from "lucide-react";
+import { motion } from "framer-motion";
 import type { Role } from "@/lib/types";
+import NotificationsBadge from "./NotificationsBadge";
 
 export default function Topbar({ role }: { role: Role }) {
   const router = useRouter();
   const [now, setNow] = useState("");
+  const [darkMode, setDarkMode] = useState(true);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("darkMode");
+    if (saved !== null) {
+      setDarkMode(JSON.parse(saved));
+    }
+    document.documentElement.classList.toggle("dark", true);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
 
   useEffect(() => {
     const update = () => {
@@ -26,24 +43,42 @@ export default function Topbar({ role }: { role: Role }) {
 
   return (
     <header
-      className="h-14 flex items-center justify-between px-6 sticky top-0 z-40"
+      className="h-14 flex items-center justify-between px-6 sticky top-0 z-40 transition-all duration-300"
       style={{ background: "#020814", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
     >
-      <div className="flex items-center gap-3">
-        <div className="px-3 py-1 rounded-full text-xs font-semibold"
-          style={{ background: "rgba(0, 201, 167, 0.1)", color: "#00C9A7", border: "1px solid rgba(0, 201, 167, 0.2)" }}>
+      <div className="flex items-center gap-4">
+        <div
+          className="px-3 py-1 rounded-full text-xs font-semibold"
+          style={{ background: "rgba(0, 201, 167, 0.1)", color: "#00C9A7", border: "1px solid rgba(0, 201, 167, 0.2)" }}
+        >
           {role.replace("_", " ").toUpperCase()}
         </div>
         <span className="text-white/30 text-xs">{now}</span>
       </div>
 
-      <div className="flex items-center gap-2">
-        <button onClick={handleLogout}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white/40 hover:text-red-400 transition-all"
-          style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.08)" }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-          </svg>
+      <div className="flex items-center gap-3">
+        <NotificationsBadge />
+
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className="w-9 h-9 rounded-xl flex items-center justify-center transition-all"
+          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", color: "#00C9A7" }}
+        >
+          <motion.div
+            initial={false}
+            animate={{ rotate: darkMode ? 0 : 180 }}
+            transition={{ duration: 0.3 }}
+          >
+            {darkMode ? <Moon size={15} /> : <Sun size={15} />}
+          </motion.div>
+        </button>
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white/40 hover:text-red-400 transition-all"
+          style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.08)" }}
+        >
+          <LogOut size={14} />
           Déconnexion
         </button>
       </div>

@@ -8,6 +8,7 @@ const rolePrefixes: Record<string, string> = {
   doctor: "/doctor",
   driver: "/driver",
   admin: "/admin",
+  super_admin: "/super-admin",
 };
 
 export async function middleware(request: NextRequest) {
@@ -42,6 +43,7 @@ export async function middleware(request: NextRequest) {
         doctor: "/doctor/dashboard",
         driver: "/driver/dashboard",
         admin: "/admin/dashboard",
+        super_admin: "/super-admin/dashboard",
       };
       return NextResponse.redirect(
         new URL(redirectMap[payload.role] || "/login", request.url)

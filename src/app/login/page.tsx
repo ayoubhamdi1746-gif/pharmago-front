@@ -51,9 +51,11 @@ export default function LoginPage() {
         body: JSON.stringify({ token: data.access_token, refresh_token: data.refresh_token }),
         credentials: "include",
       });
-      localStorage.setItem("pharmago_token", data.access_token);
-      if (data.refresh_token) {
-        localStorage.setItem("pharmago_refresh", data.refresh_token);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("pharmago_token", data.access_token);
+        if (data.refresh_token) {
+          window.localStorage.setItem("pharmago_refresh", data.refresh_token);
+        }
       }
       await setTokens(data.access_token, data.refresh_token);
       const { jwtDecode } = await import("jwt-decode");

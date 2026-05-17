@@ -45,9 +45,9 @@ const navItems: Record<Role, { href: string; label: string; icon: React.ReactNod
   super_admin: [
     { href: "/super-admin/dashboard", label: "Vue globale", icon: <LayoutDashboard size={18} /> },
     { href: "/super-admin/users", label: "Tous les utilisateurs", icon: <Users size={18} /> },
-    { href: "/admin/onboarding", label: "Demandes demo", icon: <UserPlus size={18} /> },
-    { href: "/admin/pharmacies", label: "Pharmacies", icon: <Building2 size={18} /> },
-    { href: "/admin/payouts", label: "Paiements livreurs", icon: <CreditCard size={18} /> },
+    { href: "/super-admin/demo-requests", label: "Demandes demo", icon: <UserPlus size={18} /> },
+    { href: "/super-admin/pharmacies", label: "Pharmacies", icon: <Building2 size={18} /> },
+    { href: "/super-admin/driver-payments", label: "Paiements livreurs", icon: <CreditCard size={18} /> },
   ],
 };
 

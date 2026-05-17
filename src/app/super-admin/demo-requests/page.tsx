@@ -27,7 +27,7 @@ interface DemoRequestsData {
   total: number;
 }
 
-type Status = "new" | "in_progress" | "processed";
+type Status = "new" | "processed";
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
@@ -196,7 +196,6 @@ function RequestDetailModal({ req, onClose }: { req: DemoRequestRow; onClose: ()
 
 const COLUMNS: { id: Status; label: string; color: string; bg: string }[] = [
   { id: "new", label: "Nouveau", color: "#FF4D6D", bg: "rgba(255,77,109,0.08)" },
-  { id: "in_progress", label: "En cours", color: "#FFBD2D", bg: "rgba(255,189,45,0.08)" },
   { id: "processed", label: "Traité", color: "#00C9A7", bg: "rgba(0,201,167,0.08)" },
 ];
 
@@ -224,13 +223,11 @@ export default function SuperAdminDemoRequests() {
 
   const requests = data?.requests ?? [];
   const newReqs = requests.filter((r) => !r.is_processed);
-  const inProgressReqs = requests.filter((r) => !r.is_processed);
   const processedReqs = requests.filter((r) => r.is_processed);
 
   const columns = [
     { ...COLUMNS[0], items: newReqs },
-    { ...COLUMNS[1], items: inProgressReqs },
-    { ...COLUMNS[2], items: processedReqs },
+    { ...COLUMNS[1], items: processedReqs },
   ];
 
   return (
@@ -253,7 +250,7 @@ export default function SuperAdminDemoRequests() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {columns.map((col) => (
               <div key={col.id}>
                 <div className="flex items-center justify-between mb-4 px-1">

@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       secure: true,
       sameSite: "none",
       path: "/",
-      maxAge: 86400,
+      maxAge: 30 * 60,
     });
 
     response.cookies.set("pharmago_token_client", token, {
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       secure: true,
       sameSite: "none",
       path: "/",
-      maxAge: 86400,
+      maxAge: 30 * 60,
     });
 
     if (refresh_token) {

@@ -3,13 +3,11 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, Download, ChevronUp, ChevronDown, ChevronRight, X, Building2, MapPin, CreditCard, Truck, Calendar, CheckCircle2, XCircle, ToggleLeft } from "lucide-react";
+import { Search, Download, ChevronUp, ChevronDown, ChevronRight, X, Building2, MapPin, CreditCard, Truck, Calendar, CheckCircle2, XCircle } from "lucide-react";
 import RoleGuard from "@/components/RoleGuard";
 import Skeleton from "@/components/Skeleton";
 import api from "@/lib/api";
 import type { ApiResponse } from "@/lib/types";
-import { useLocale } from "@/lib/useLocale";
-import { t } from "@/lib/i18n";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.15 } } };
@@ -143,7 +141,6 @@ function SidePanel({ pharmacy, onClose }: { pharmacy: Pharmacy; onClose: () => v
 const PLANS = ["STARTER", "PRO", "ENTERPRISE"];
 
 export default function SuperAdminPharmacies() {
-  const { locale } = useLocale();
   const [search, setSearch] = useState("");
   const [planFilter, setPlanFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");

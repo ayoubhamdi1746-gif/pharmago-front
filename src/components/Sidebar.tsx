@@ -89,7 +89,9 @@ export default function Sidebar({ role }: { role: Role }) {
       </div>
 
       <nav className="flex-1 space-y-1">
-        {items.map((item) => {
+        {items.length === 0 && <div data-debug="empty-items" />}
+        {items.map((item, index) => {
+          console.log(`[sidebar] item ${index}: href=${item.href}, label=${item.label}`);
           const active = pathname === item.href;
           if (item.href === "/super-admin/pharmacies") {
             return (

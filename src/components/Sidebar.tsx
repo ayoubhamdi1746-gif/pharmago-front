@@ -91,6 +91,19 @@ export default function Sidebar({ role }: { role: Role }) {
       <nav className="flex-1 space-y-1">
         {items.map((item) => {
           const active = pathname === item.href;
+          if (item.href === "/super-admin/pharmacies") {
+            return (
+              <button key={item.href} onClick={() => {
+                console.log("clicking pharmacies");
+                window.location.href = "/super-admin/pharmacies";
+              }} className="w-full text-left">
+                <div className={`nav-link ${active ? "active" : ""}`}>
+                  <span className="flex-shrink-0">{item.icon}</span>
+                  <span>{item.label}</span>
+                </div>
+              </button>
+            );
+          }
           return (
             <Link key={item.href} href={item.href}>
               <div className={`nav-link ${active ? "active" : ""}`}>

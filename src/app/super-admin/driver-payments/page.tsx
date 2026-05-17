@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import RoleGuard from "@/components/RoleGuard";
 import GlassCard from "@/components/ui/GlassCard";
@@ -27,33 +26,38 @@ interface PayoutsData {
 const FILTERS = ["all", "PENDING", "PAID"] as const;
 
 export default function SuperAdminDriverPayments() {
-  const queryClient = useQueryClient();
   const [period, setPeriod] = useState<"week" | "all">("week");
   const [filter, setFilter] = useState<typeof FILTERS[number]>("all");
   const [marking, setMarking] = useState<string | null>(null);
+  const [data, setData] = useState<PayoutsData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["sa-driver-payouts", period],
-    queryFn: async () => {
-      const token = document.cookie.split("; ").find((r) => r.startsWith("pharmago_token_client="))?.split("=")[1] ?? localStorage.getItem("pharmago_token") ?? "";
-      const res = await fetch(`/api/admin/payouts?period=${period}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        credentials: "include",
-      });
-      return (await res.json()).data;
-    },
-  });
+  const getToken = (): string => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("pharmago_token") ?? "";
+  };
+
+  const fetchData = () => {
+    const token = getToken();
+    if (!token) { setIsLoading(false); return; }
+    fetch(`/api/admin/payouts?period=${period}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((json) => { setData(json.data); setIsLoading(false); })
+      .catch(() => setIsLoading(false));
+  };
+
+  useEffect(() => { fetchData(); }, [period]);
 
   const handleMarkPaid = async (payoutId: string) => {
     setMarking(payoutId);
     try {
-      const token = document.cookie.split("; ").find((r) => r.startsWith("pharmago_token_client="))?.split("=")[1] ?? localStorage.getItem("pharmago_token") ?? "";
+      const token = getToken();
       await fetch(`/api/admin/payouts/${payoutId}/mark-paid`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         credentials: "include",
       });
-      queryClient.invalidateQueries({ queryKey: ["sa-driver-payouts"] });
+      fetchData();
       window.dispatchEvent(new CustomEvent("toast", { detail: { type: "success", message: "Paiement marqué comme payé" } }));
     } catch {
       window.dispatchEvent(new CustomEvent("toast", { detail: { type: "error", message: "Erreur lors du marquage" } }));

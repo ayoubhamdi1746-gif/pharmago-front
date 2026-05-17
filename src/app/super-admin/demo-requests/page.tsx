@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Mail, CheckCircle2, X, Clock, MapPin, Building2 } from "lucide-react";
 import RoleGuard from "@/components/RoleGuard";
@@ -92,20 +91,24 @@ function DemoCard({ req, onSelect }: { req: DemoRequestRow; onSelect: (r: DemoRe
   );
 }
 
-function RequestDetailModal({ req, onClose }: { req: DemoRequestRow; onClose: () => void }) {
-  const queryClient = useQueryClient();
+function RequestDetailModal({ req, onClose, onRefresh }: { req: DemoRequestRow; onClose: () => void; onRefresh: () => void }) {
   const [processing, setProcessing] = useState(false);
+
+  const getToken = (): string => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("pharmago_token") ?? "";
+  };
 
   const handleProcess = async (status: Status) => {
     setProcessing(true);
     try {
-      const token = document.cookie.split("; ").find((r) => r.startsWith("pharmago_token_client="))?.split("=")[1] ?? localStorage.getItem("pharmago_token") ?? "";
+      const token = getToken();
       await fetch(`/api/public/demo-requests/${req.id}/process`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         credentials: "include",
       });
-      queryClient.invalidateQueries({ queryKey: ["demo-requests"] });
+      onRefresh();
       window.dispatchEvent(new CustomEvent("toast", { detail: { type: "success", message: "Demande mise à jour" } }));
       onClose();
     } catch {
@@ -203,20 +206,25 @@ const COLUMNS: { id: Status; label: string; color: string; bg: string }[] = [
 ];
 
 export default function SuperAdminDemoRequests() {
-  const queryClient = useQueryClient();
   const [selected, setSelected] = useState<DemoRequestRow | null>(null);
+  const [data, setData] = useState<DemoRequestsData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["demo-requests"],
-    queryFn: async () => {
-      const token = document.cookie.split("; ").find((r) => r.startsWith("pharmago_token_client="))?.split("=")[1] ?? localStorage.getItem("pharmago_token") ?? "";
-      const res = await fetch("/api/public/demo-requests", {
-        headers: { Authorization: `Bearer ${token}` },
-        credentials: "include",
-      });
-      return (await res.json()).data;
-    },
-  });
+  const getToken = (): string => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("pharmago_token") ?? "";
+  };
+
+  const fetchData = () => {
+    const token = getToken();
+    if (!token) { setIsLoading(false); return; }
+    fetch("/api/public/demo-requests", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((json) => { setData(json.data); setIsLoading(false); })
+      .catch(() => setIsLoading(false));
+  };
+
+  useEffect(() => { fetchData(); }, []);
 
   const requests = data?.requests ?? [];
   const newReqs = requests.filter((r) => !r.is_processed);
@@ -280,7 +288,7 @@ export default function SuperAdminDemoRequests() {
         )}
       </motion.div>
 
-      <AnimatePresence>{selected && <RequestDetailModal req={selected} onClose={() => setSelected(null)} />}</AnimatePresence>
+      <AnimatePresence>{selected && <RequestDetailModal req={selected} onClose={() => setSelected(null)} onRefresh={fetchData} />}</AnimatePresence>
     </RoleGuard>
   );
 }

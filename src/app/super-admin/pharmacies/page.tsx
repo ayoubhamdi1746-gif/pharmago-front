@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Download, ChevronUp, ChevronDown, ChevronRight, X, Building2, MapPin, CreditCard, Truck, Calendar, CheckCircle2, XCircle } from "lucide-react";
 import RoleGuard from "@/components/RoleGuard";
@@ -47,10 +46,15 @@ function SidePanel({ pharmacy, onClose }: { pharmacy: Pharmacy; onClose: () => v
   const [newPlan, setNewPlan] = useState(pharmacy.plan);
   const planOptions = ["STARTER", "PRO", "ENTERPRISE"];
 
+  const getToken = (): string => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("pharmago_token") ?? "";
+  };
+
   const handleToggle = async () => {
     setActivating(true);
     try {
-      const token = document.cookie.split("; ").find((r) => r.startsWith("pharmago_token_client="))?.split("=")[1] ?? localStorage.getItem("pharmago_token") ?? "";
+      const token = getToken();
       await fetch(`/api/admin/pharmacies/${pharmacy.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
@@ -154,21 +158,25 @@ export default function SuperAdminPharmacies() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["super-pharmacies"],
-    queryFn: async () => {
-      const token = document.cookie.split("; ").find((r) => r.startsWith("pharmago_token_client="))?.split("=")[1] ?? localStorage.getItem("pharmago_token") ?? "";
-      const res = await fetch("/api/admin/pharmacies", {
-        headers: { Authorization: `Bearer ${token}` },
-        credentials: "include",
-      });
-      const json = await res.json();
-      return json.data?.pharmacies ?? [];
-    },
-  });
+  const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getToken = (): string => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("pharmago_token") ?? "";
+  };
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token) { setIsLoading(false); return; }
+    fetch("/api/admin/pharmacies", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((json) => { setPharmacies(json.data?.pharmacies ?? []); setIsLoading(false); })
+      .catch(() => setIsLoading(false));
+  }, []);
 
   const filtered = useMemo(() => {
-    let result = (data ?? []).filter((p) => {
+    let result = pharmacies.filter((p) => {
       const nameCity = `${p.pharmacy_name} ${p.city ?? ""}`.toLowerCase();
       if (search && !nameCity.includes(search.toLowerCase())) return false;
       if (planFilter && p.plan !== planFilter) return false;
@@ -186,7 +194,7 @@ export default function SuperAdminPharmacies() {
       return 0;
     });
     return result;
-  }, [data, search, planFilter, cityFilter, sortKey, sortDir]);
+  }, [pharmacies, search, planFilter, cityFilter, sortKey, sortDir]);
 
   const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
@@ -234,7 +242,7 @@ export default function SuperAdminPharmacies() {
           <select value={cityFilter} onChange={(e) => { setCityFilter(e.target.value); setPage(1); }}
             className="px-4 py-2.5 border border-[#00D4AA]/20 bg-[#0A1628] text-white rounded-xl text-sm focus:outline-none focus:border-[#00D4AA]">
             <option value="">Toutes les villes</option>
-            {[...new Set((data ?? []).map((p) => p.city).filter(Boolean) as string[])].sort().map((c) => <option key={c} value={c}>{c}</option>)}
+            {[...new Set(pharmacies.map((p) => p.city).filter(Boolean) as string[])].sort().map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
           <select value={perPage} onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }}
             className="px-4 py-2.5 border border-[#00D4AA]/20 bg-[#0A1628] text-white rounded-xl text-sm focus:outline-none focus:border-[#00D4AA]">

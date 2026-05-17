@@ -44,7 +44,7 @@ export default function LoginPage() {
 
     try {
       const { data } = await api.post("/auth/login", { username, password });
-      const { setTokens, getUserFromToken } = await import("@/lib/auth");
+      const { setTokens } = await import("@/lib/auth");
       await fetch("/api/auth/set-cookie", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -52,11 +52,14 @@ export default function LoginPage() {
         credentials: "include",
       });
       localStorage.setItem("pharmago_token", data.access_token);
-      await setTokens(data.access_token, data.refresh_token);
-      const user = await getUserFromToken();
-      if (user) {
-        router.push(getRedirectPath(user.role));
+      if (data.refresh_token) {
+        localStorage.setItem("pharmago_refresh", data.refresh_token);
       }
+      await setTokens(data.access_token, data.refresh_token);
+      const { jwtDecode } = await import("jwt-decode");
+      const payload = jwtDecode<{ role: string }>(data.access_token);
+      const { getRedirectPath } = await import("@/lib/redirect");
+      router.push(getRedirectPath(payload.role));
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
       if (status === 401) {

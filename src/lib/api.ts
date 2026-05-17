@@ -12,7 +12,7 @@ const api = axios.create({
 let isRefreshing = false;
 let refreshPromise: Promise<void> | null = null;
 
-api.interceptors.request.use(async (config) => {
+api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("pharmago_token");
     if (token) {

@@ -19,19 +19,23 @@ export default function RoleGuard({
 
   useEffect(() => {
     (async () => {
-      const { getUserFromToken, clearTokens } = await import("@/lib/auth");
       const { getRedirectPath } = await import("@/lib/redirect");
-      const u = await getUserFromToken();
-      if (!u) {
-        await clearTokens();
+      const token = localStorage.getItem("pharmago_token");
+      if (!token) {
         router.push("/login");
         return;
       }
-      if (u.role !== allowedRole) {
-        router.push(getRedirectPath(u.role));
-        return;
+      try {
+        const { jwtDecode } = await import("jwt-decode");
+        const payload = jwtDecode<AuthPayload>(token);
+        if (payload.role !== allowedRole) {
+          router.push(getRedirectPath(payload.role));
+          return;
+        }
+        setUser(payload);
+      } catch {
+        router.push("/login");
       }
-      setUser(u);
     })();
   }, [allowedRole, router]);
 

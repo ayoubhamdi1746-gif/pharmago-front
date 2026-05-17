@@ -51,6 +51,7 @@ export default function LoginPage() {
         body: JSON.stringify({ token: data.access_token, refresh_token: data.refresh_token }),
         credentials: "include",
       });
+      localStorage.setItem("pharmago_token", data.access_token);
       await setTokens(data.access_token, data.refresh_token);
       const user = await getUserFromToken();
       if (user) {

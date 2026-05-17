@@ -14,10 +14,7 @@ let refreshPromise: Promise<void> | null = null;
 
 api.interceptors.request.use(async (config) => {
   if (typeof window !== "undefined") {
-    const token = document.cookie
-      .split("; ")
-      .find((r) => r.startsWith("pharmago_token_client="))
-      ?.split("=")[1];
+    const token = localStorage.getItem("pharmago_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -37,10 +34,7 @@ api.interceptors.response.use(
       }
       if (isRefreshing && refreshPromise) {
         await refreshPromise;
-        const newToken = document.cookie
-          .split("; ")
-          .find((r) => r.startsWith("pharmago_token_client="))
-          ?.split("=")[1];
+        const newToken = localStorage.getItem("pharmago_token");
         if (newToken) {
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return api(originalRequest);
@@ -54,6 +48,7 @@ api.interceptors.response.use(
         const refresh = await getRefreshToken();
         if (!refresh) {
           await clearTokens();
+          localStorage.removeItem("pharmago_token");
           window.location.href = "/login";
           throw error;
         }
@@ -61,19 +56,18 @@ api.interceptors.response.use(
           `${api.defaults.baseURL}/auth/refresh`,
           { refresh_token: refresh }
         );
+        localStorage.setItem("pharmago_token", data.access_token);
         await setTokens(data.access_token, data.refresh_token);
       })();
 
       try {
         await refreshPromise;
-        const newToken = document.cookie
-          .split("; ")
-          .find((r) => r.startsWith("pharmago_token_client="))
-          ?.split("=")[1];
+        const newToken = localStorage.getItem("pharmago_token");
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
       } catch {
         await clearTokens();
+        localStorage.removeItem("pharmago_token");
         window.location.href = "/login";
         return Promise.reject(error);
       } finally {

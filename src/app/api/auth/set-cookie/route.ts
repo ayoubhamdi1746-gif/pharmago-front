@@ -18,6 +18,14 @@ export async function POST(request: NextRequest) {
       maxAge: 86400,
     });
 
+    response.cookies.set("pharmago_token_client", token, {
+      httpOnly: false,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+      maxAge: 86400,
+    });
+
     if (refresh_token) {
       response.cookies.set("pharmago_refresh", refresh_token, {
         httpOnly: true,

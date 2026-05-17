@@ -14,8 +14,10 @@ let refreshPromise: Promise<void> | null = null;
 
 api.interceptors.request.use(async (config) => {
   if (typeof window !== "undefined") {
-    const { getToken: clientGetToken } = await import("./auth");
-    const token = await clientGetToken();
+    const token = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("pharmago_token_client="))
+      ?.split("=")[1];
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -35,8 +37,10 @@ api.interceptors.response.use(
       }
       if (isRefreshing && refreshPromise) {
         await refreshPromise;
-        const { getToken: clientGetToken } = await import("./auth");
-        const newToken = await clientGetToken();
+        const newToken = document.cookie
+          .split("; ")
+          .find((r) => r.startsWith("pharmago_token_client="))
+          ?.split("=")[1];
         if (newToken) {
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return api(originalRequest);
@@ -62,8 +66,10 @@ api.interceptors.response.use(
 
       try {
         await refreshPromise;
-        const { getToken: clientGetToken } = await import("./auth");
-        const newToken = await clientGetToken();
+        const newToken = document.cookie
+          .split("; ")
+          .find((r) => r.startsWith("pharmago_token_client="))
+          ?.split("=")[1];
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
       } catch {

@@ -156,8 +156,6 @@ export default function SuperAdminPharmacies() {
   const { data, isLoading } = useQuery({
     queryKey: ["super-pharmacies"],
     queryFn: async () => {
-      console.log("token in localStorage:", localStorage.getItem("pharmago_token"));
-      console.log("auth header:", api.defaults.headers.common["Authorization"]);
       const res = await api.get<ApiResponse<{ pharmacies: Pharmacy[] }>>("/admin/pharmacies");
       return res.data.data?.pharmacies ?? [];
     },

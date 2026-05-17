@@ -314,7 +314,9 @@ export default function SuperAdminPharmacies() {
                 </button>
                 {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                   const pg = i + 1;
-                  return (
+  console.log("PHARMACIES RENDERED");
+
+  return (
                     <button key={pg} onClick={() => setPage(pg)}
                       className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium transition-colors ${
                         page === pg ? "bg-[#00C9A7] text-white" : "text-white/40 hover:text-white hover:bg-white/5"

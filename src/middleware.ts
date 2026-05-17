@@ -18,6 +18,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (pathname.startsWith("/super-admin")) {
+    return NextResponse.next();
+  }
+
   const token = request.cookies.get("pharmago_token")?.value;
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));

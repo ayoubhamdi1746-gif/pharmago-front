@@ -6,8 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Download, ChevronUp, ChevronDown, ChevronRight, X, Building2, MapPin, CreditCard, Truck, Calendar, CheckCircle2, XCircle } from "lucide-react";
 import RoleGuard from "@/components/RoleGuard";
 import Skeleton from "@/components/Skeleton";
-import api from "@/lib/api";
-import type { ApiResponse } from "@/lib/types";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.15 } } };
@@ -52,7 +50,13 @@ function SidePanel({ pharmacy, onClose }: { pharmacy: Pharmacy; onClose: () => v
   const handleToggle = async () => {
     setActivating(true);
     try {
-      await api.patch(`/admin/pharmacies/${pharmacy.id}`, { is_active: !pharmacy.is_active });
+      const token = document.cookie.split("; ").find((r) => r.startsWith("pharmago_token_client="))?.split("=")[1] ?? localStorage.getItem("pharmago_token") ?? "";
+      await fetch(`/api/admin/pharmacies/${pharmacy.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ is_active: !pharmacy.is_active }),
+        credentials: "include",
+      });
       window.dispatchEvent(new CustomEvent("toast", { detail: { type: "success", message: pharmacy.is_active ? "Pharmacie désactivée" : "Pharmacie activée" } }));
       onClose();
     } catch {
@@ -153,8 +157,13 @@ export default function SuperAdminPharmacies() {
   const { data, isLoading } = useQuery({
     queryKey: ["super-pharmacies"],
     queryFn: async () => {
-      const res = await api.get<ApiResponse<{ pharmacies: Pharmacy[] }>>("/admin/pharmacies");
-      return res.data.data?.pharmacies ?? [];
+      const token = document.cookie.split("; ").find((r) => r.startsWith("pharmago_token_client="))?.split("=")[1] ?? localStorage.getItem("pharmago_token") ?? "";
+      const res = await fetch("/api/admin/pharmacies", {
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+      });
+      const json = await res.json();
+      return json.data?.pharmacies ?? [];
     },
   });
 

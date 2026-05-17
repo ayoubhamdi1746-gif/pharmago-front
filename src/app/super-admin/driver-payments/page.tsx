@@ -5,10 +5,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import RoleGuard from "@/components/RoleGuard";
 import GlassCard from "@/components/ui/GlassCard";
-import api from "@/lib/api";
-import type { ApiResponse } from "@/lib/types";
-import { useLocale } from "@/lib/useLocale";
-import { t } from "@/lib/i18n";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.15 } } };
@@ -31,7 +27,6 @@ interface PayoutsData {
 const FILTERS = ["all", "PENDING", "PAID"] as const;
 
 export default function SuperAdminDriverPayments() {
-  const { locale } = useLocale();
   const queryClient = useQueryClient();
   const [period, setPeriod] = useState<"week" | "all">("week");
   const [filter, setFilter] = useState<typeof FILTERS[number]>("all");
@@ -40,15 +35,24 @@ export default function SuperAdminDriverPayments() {
   const { data, isLoading } = useQuery({
     queryKey: ["sa-driver-payouts", period],
     queryFn: async () => {
-      const res = await api.get<ApiResponse<PayoutsData>>(`/admin/payouts?period=${period}`);
-      return res.data.data;
+      const token = document.cookie.split("; ").find((r) => r.startsWith("pharmago_token_client="))?.split("=")[1] ?? localStorage.getItem("pharmago_token") ?? "";
+      const res = await fetch(`/api/admin/payouts?period=${period}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+      });
+      return (await res.json()).data;
     },
   });
 
   const handleMarkPaid = async (payoutId: string) => {
     setMarking(payoutId);
     try {
-      await api.post(`/admin/payouts/${payoutId}/mark-paid`);
+      const token = document.cookie.split("; ").find((r) => r.startsWith("pharmago_token_client="))?.split("=")[1] ?? localStorage.getItem("pharmago_token") ?? "";
+      await fetch(`/api/admin/payouts/${payoutId}/mark-paid`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        credentials: "include",
+      });
       queryClient.invalidateQueries({ queryKey: ["sa-driver-payouts"] });
       window.dispatchEvent(new CustomEvent("toast", { detail: { type: "success", message: "Paiement marqué comme payé" } }));
     } catch {

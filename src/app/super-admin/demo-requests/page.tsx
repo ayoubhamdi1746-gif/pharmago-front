@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, Mail, CheckCircle2, X, Clock, MapPin, Building2, User, ChevronDown } from "lucide-react";
+import { Phone, Mail, CheckCircle2, X, Clock, MapPin, Building2 } from "lucide-react";
 import RoleGuard from "@/components/RoleGuard";
-import api from "@/lib/api";
-import type { ApiResponse } from "@/lib/types";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.15 } } };
@@ -101,7 +99,12 @@ function RequestDetailModal({ req, onClose }: { req: DemoRequestRow; onClose: ()
   const handleProcess = async (status: Status) => {
     setProcessing(true);
     try {
-      await api.patch(`/public/demo-requests/${req.id}/process`);
+      const token = document.cookie.split("; ").find((r) => r.startsWith("pharmago_token_client="))?.split("=")[1] ?? localStorage.getItem("pharmago_token") ?? "";
+      await fetch(`/api/public/demo-requests/${req.id}/process`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        credentials: "include",
+      });
       queryClient.invalidateQueries({ queryKey: ["demo-requests"] });
       window.dispatchEvent(new CustomEvent("toast", { detail: { type: "success", message: "Demande mise à jour" } }));
       onClose();
@@ -206,20 +209,14 @@ export default function SuperAdminDemoRequests() {
   const { data, isLoading } = useQuery({
     queryKey: ["demo-requests"],
     queryFn: async () => {
-      const res = await api.get<ApiResponse<DemoRequestsData>>("/public/demo-requests");
-      return res.data.data;
+      const token = document.cookie.split("; ").find((r) => r.startsWith("pharmago_token_client="))?.split("=")[1] ?? localStorage.getItem("pharmago_token") ?? "";
+      const res = await fetch("/api/public/demo-requests", {
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+      });
+      return (await res.json()).data;
     },
   });
-
-  const handleProcess = async (req: DemoRequestRow) => {
-    try {
-      await api.patch(`/public/demo-requests/${req.id}/process`);
-      queryClient.invalidateQueries({ queryKey: ["demo-requests"] });
-      window.dispatchEvent(new CustomEvent("toast", { detail: { type: "success", message: "Marqué comme traité" } }));
-    } catch {
-      window.dispatchEvent(new CustomEvent("toast", { detail: { type: "error", message: "Erreur" } }));
-    }
-  };
 
   const requests = data?.requests ?? [];
   const newReqs = requests.filter((r) => !r.is_processed);
